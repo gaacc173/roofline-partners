@@ -1,6 +1,6 @@
 # Roofline Partners
 
-Premium roofing solutions for residential and commercial properties.
+Premium, qualification-first roofing appointment packages for contractor teams.
 
 ## Quick Start
 
@@ -15,8 +15,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ```
 src/
-  app/          # Next.js App Router pages
-  lib/          # Shared utilities (env validation, lead helpers)
+  app/          # Next.js App Router pages and metadata assets
+  components/   # Reusable layout, UI, and marketing sections
+  content/      # Typed, reviewable package and marketing copy
+  lib/          # Shared utilities (environment, analytics, lead helpers)
 docs/           # Architecture and project documentation
 public/         # Static assets (images, favicons, SVGs)
 ```

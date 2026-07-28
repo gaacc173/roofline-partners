@@ -44,6 +44,13 @@
 - Appointment package prices are explicit sample amounts, with final availability and terms confirmed after qualification
 - The App Router now serves the self-authored `src/app/icon.svg` favicon
 
+## Commit 4: Marketing Pages
+
+- Homepage now includes a premium self-authored appointment-flow illustration, package preview, qualification context, process, risk-reversal, FAQ preview, and repeated CTAs
+- `src/components/marketing/` contains reusable `AppointmentFlow` and `PackageCard` presentation components
+- `/get-started?package=<package-id>` reads the selected typed package configuration and explains the pending qualification path without implying an online purchase
+- No external images, social proof, credential claims, or unverified performance claims are used
+
 ## Brand
 
 - **Name**: Roofline Partners
@@ -53,7 +60,7 @@
 
 ## MVP Scope
 
-1. **Premium marketing site** — hero, services, packages, about, testimonials
+1. **Premium marketing site** — hero, packages, process, qualification context, FAQ, and contact
 2. **Secure lead capture** — form → sanitise → validate → store in Supabase → email via Resend
 3. **No payments in v1** — manual fulfillment workflow
 4. **SEO** — full metadata, OG images, JSON-LD, sitemap, robots.txt

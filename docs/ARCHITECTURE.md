@@ -24,8 +24,13 @@ Roofline Partners is a premium roofing company website built with **Next.js App 
 src/
   app/
     layout.tsx    # Root layout with metadata (SEO, OG tags)
-    page.tsx      # Home page (static)
+    page.tsx      # Config-driven premium home page
     globals.css   # Tailwind imports, CSS variables
+  components/
+    marketing/    # Appointment-flow and package presentation components
+    layout/       # Shared navigation and footer
+    ui/           # Reusable design-system primitives
+  content/        # Typed marketing, package, FAQ, and site configuration
   lib/
     env.ts        # Typed environment validation
     lead-utils.ts # Lead data sanitisation & validation
@@ -44,7 +49,7 @@ User → Browser → Next.js App Router → Server Components
 
 ### Current State (Shared Marketing Shell)
 
-- **Static public routes** — a shared layout and configuration-driven route shells render through Next.js App Router
+- **Marketing experience** — homepage, packages, process, differentiation, FAQ, contact, and a query-aware package selection route render through a shared config-driven design system
 - **Environment resolution** — public site values have safe local defaults; `validateProductionEnvironment()` is reserved for release/deployment validation so contributors can run the shell without secrets
 - **Lead utilities** — pure functions for sanitising and validating lead data (ready for future server actions/API routes)
 

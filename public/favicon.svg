@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Roof shape -->
-  <path d="M16 4L2 16h4v12h20V16h4L16 4z" fill="#0f172a"/>
-  <!-- Roof line accent -->
-  <path d="M16 4v12" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- Chimney -->
-  <rect x="22" y="10" width="3" height="6" fill="#3f3f46" rx="0.5"/>
-</svg>

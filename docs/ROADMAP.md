@@ -45,7 +45,7 @@
 - [x] Packages/pricing page (/packages)
 - [x] How it works, why Roofline, FAQ, and contact route shells
 - [x] Content/configuration modules for public copy and packages
-- [ ] Complete premium homepage and shared conversion sections
+- [x] Complete premium homepage and shared conversion sections
 - [ ] Contact page with lead form (/contact)
 - [ ] Verified testimonial/social-proof section once approved evidence is supplied
 - [ ] JSON-LD: Organization + Service schemas
@@ -89,7 +89,7 @@
 | 1. Foundation              | 2026-07-28 | ✅ Done    |
 | 2. Documentation           | 2026-07-28 | ✅ Done    |
 | 3. Design System & Layout  | 2026-07-28 | ✅ Done    |
-| 4. Marketing Content Pages | TBD        | ⏳ Pending |
+| 4. Marketing Content Pages | 2026-07-28 | ✅ Done    |
 | 5. Lead Capture MVP        | TBD        | ⏳ Pending |
 | 6. SEO & Polish            | TBD        | ⏳ Pending |
 | 7. Deployment & CI/CD      | TBD        | ⏳ Pending |

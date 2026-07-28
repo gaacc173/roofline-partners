@@ -1,39 +1,74 @@
+import { PackageCard } from "@/components/marketing";
 import { Container, SectionHeading } from "@/components/ui";
+import { getStartedContent } from "@/content/marketing";
+import { getPackageById, packages } from "@/content/packages";
 
 export const metadata = {
-  title: "Get Started — Roofline Partners",
-  description: "Begin your roofing project with Roofline Partners.",
+  title: getStartedContent.metadata.title,
+  description: getStartedContent.metadata.description,
 };
 
-export default function GetStartedPage() {
+interface GetStartedPageProps {
+  searchParams: Promise<{ package?: string }>;
+}
+
+export default async function GetStartedPage({ searchParams }: GetStartedPageProps) {
+  const { package: packageId } = await searchParams;
+  const selectedPackage = packageId ? getPackageById(packageId) : undefined;
+
   return (
-    <Container size="md">
-      <SectionHeading
-        tag="Get Started"
-        title="Ready to Get Started?"
-        subtitle="Take the first step toward a better roof."
-        align="center"
-      />
-      <div className="mx-auto max-w-md space-y-6 rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Our contact form will be available in the next milestone. In the meantime, you can reach
-          us directly.
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <a
-            href="/contact"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            Contact Us
-          </a>
-          <a
-            href="/packages"
-            className="inline-flex h-10 items-center justify-center rounded-md border border-zinc-200 bg-white px-5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-800"
-          >
-            View Packages
-          </a>
+    <div className="py-16 sm:py-24">
+      <Container size="xl">
+        <SectionHeading
+          tag={getStartedContent.eyebrow}
+          title={getStartedContent.title}
+          subtitle={getStartedContent.description}
+          align="center"
+          className="mx-auto max-w-3xl"
+        />
+        {selectedPackage ? (
+          <section aria-label={getStartedContent.selectedLabel} className="mx-auto mb-12 max-w-xl">
+            <p className="mb-3 text-center text-sm font-semibold tracking-[0.14em] text-amber-700 uppercase dark:text-amber-300">
+              {getStartedContent.selectedLabel}
+            </p>
+            <PackageCard packageItem={selectedPackage} selected />
+          </section>
+        ) : (
+          <p className="mx-auto mb-12 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-300">
+            {getStartedContent.unknownSelection}
+          </p>
+        )}
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {packages.map((packageItem) => (
+              <PackageCard
+                key={packageItem.id}
+                packageItem={packageItem}
+                compact
+                selected={packageItem.id === selectedPackage?.id}
+              />
+            ))}
+          </div>
+          <aside className="h-fit rounded-2xl bg-slate-950 p-7 text-white lg:sticky lg:top-24">
+            <h2 className="text-xl font-bold">{getStartedContent.nextStepTitle}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              {getStartedContent.nextStepDescription}
+            </p>
+            <a
+              href="/contact"
+              className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200"
+            >
+              {getStartedContent.contactCta}
+            </a>
+            <a
+              href="/packages"
+              className="mt-4 block text-sm font-semibold text-amber-200 underline underline-offset-4"
+            >
+              {getStartedContent.packageCta} →
+            </a>
+          </aside>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 }
