@@ -1,0 +1,89 @@
+# Architecture Decision Records
+
+## ADR-001: Next.js App Router
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: We need a modern React framework with server-side rendering, SEO support, and deployment simplicity on Vercel.
+- **Decision**: Use Next.js 16 with App Router exclusively. No Pages Router.
+- **Consequences**:
+  - Access to Server Components, Server Actions, and route handlers
+  - Turbopack for fast dev builds
+  - Vercel-native deployment with zero config
+  - Must follow App Router conventions (layout.tsx, page.tsx, etc.)
+
+## ADR-002: TypeScript Strict Mode
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: Type safety is important for a production application with deferred integrations.
+- **Decision**: Enable TypeScript strict mode in `tsconfig.json`.
+- **Consequences**: All code is type-checked; no `any`; explicit types at module boundaries.
+
+## ADR-003: Tailwind CSS v4
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: We need a utility-first CSS framework that integrates well with Next.js.
+- **Decision**: Use Tailwind CSS v4 with PostCSS plugin. CSS variables for theming.
+- **Consequences**: No `tailwind.config.js`; configuration via CSS `@theme` directive.
+
+## ADR-004: Vitest for Unit Testing
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: We need fast, framework-agnostic unit testing for pure utility functions.
+- **Decision**: Use Vitest with `node` environment for unit tests.
+- **Consequences**: Tests live alongside source files (`*.test.ts`); pure utilities in `src/lib/` are easily testable.
+
+## ADR-005: Playwright for E2E Testing
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: End-to-end testing is needed once the application has interactive features.
+- **Decision**: Install Playwright with Chromium browser for future E2E tests.
+- **Consequences**: Browser binary downloaded; test config ready but no tests written yet.
+
+## ADR-006: Deferred Supabase / Resend Integration
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: The MVP needs lead capture but we want to keep the foundation lean.
+- **Decision**: Implement typed environment validation and lead utilities now; wire Supabase and Resend in the MVP phase.
+- **Consequences**:
+  - `.env.example` documents the schema for future variables
+  - `src/lib/env.ts` validates required vars at startup
+  - `src/lib/lead-utils.ts` is ready for use in server actions/API routes
+  - No database or email dependencies in the foundation
+
+## ADR-007: No Payments in v1
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: Roofline Partners' initial MVP does not require online payments.
+- **Decision**: Manual fulfillment workflow only. No Stripe or payment processor integration.
+- **Consequences**: Simpler MVP scope; payments can be added in a future milestone.
+
+## ADR-008: Prettier with PackageJSON Plugin
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: Consistent code formatting across all files including package.json.
+- **Decision**: Use Prettier 3 with `prettier-plugin-packagejson`.
+- **Consequences**: `package.json` fields are sorted alphabetically; consistent formatting across all file types.
+
+## ADR-009: Asset Policy
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: We need a clear policy for assets without licensing concerns.
+- **Decision**: Only use self-generated SVGs, CSS-based assets, and Next.js built-in fonts (Geist). No unlicensed external assets.
+- **Consequences**: All brand assets (logo, OG images, favicon) must be created in-house or sourced with appropriate licenses.
+
+## ADR-010: Git Milestones
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: Clear versioning with meaningful commits.
+- **Decision**: Six milestones tracked in [ROADMAP.md](./ROADMAP.md), each corresponding to a logical feature boundary.
+- **Consequences**: Foundation (Commit 1), documentation (Commit 2), MVP features, and deployment are clearly delineated.

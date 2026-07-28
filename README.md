@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roofline Partners
 
-## Getting Started
+Premium roofing solutions for residential and commercial properties.
 
-First, run the development server:
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/          # Next.js App Router pages
+  lib/          # Shared utilities (env validation, lead helpers)
+docs/           # Architecture and project documentation
+public/         # Static assets (images, favicons, SVGs)
+```
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Script                 | Description                     |
+| ---------------------- | ------------------------------- |
+| `npm run dev`          | Start dev server with Turbopack |
+| `npm run build`        | Production build                |
+| `npm run start`        | Start production server         |
+| `npm run lint`         | Run ESLint                      |
+| `npm run lint:fix`     | Run ESLint with auto-fix        |
+| `npm run test`         | Run Vitest unit tests           |
+| `npm run test:watch`   | Run Vitest in watch mode        |
+| `npm run typecheck`    | TypeScript type checking        |
+| `npm run format`       | Format with Prettier            |
+| `npm run format:check` | Check formatting                |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment Variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Copy `.env.example` to `.env.local` and fill in values as integrations are added. See [docs/SETUP.md](./docs/SETUP.md) for details.
 
-## Deploy on Vercel
+## Documentation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Architecture](./docs/ARCHITECTURE.md) — system overview and data flow
+- [Project Memory](./docs/PROJECT_MEMORY.md) — living context document
+- [Architecture Decisions](./docs/DECISIONS.md) — recorded decisions
+- [Roadmap](./docs/ROADMAP.md) — milestones and timeline
+- [Security](./docs/SECURITY.md) — security posture and practices
+- [Setup](./docs/SETUP.md) — local development guide
+- [API](./docs/API.md) — API routes and server actions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Target platform: **Vercel**. See [docs/ROADMAP.md](./docs/ROADMAP.md) for deployment milestones.
+
+## License
+
+Proprietary — all rights reserved.
