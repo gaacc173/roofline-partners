@@ -86,4 +86,28 @@
 - **Date**: 2026-07-28
 - **Context**: Clear versioning with meaningful commits.
 - **Decision**: Six milestones tracked in [ROADMAP.md](./ROADMAP.md), each corresponding to a logical feature boundary.
-- **Consequences**: Foundation (Commit 1), documentation (Commit 2), MVP features, and deployment are clearly delineated.
+- **Consequences**: Foundation (Commit 1), documentation (Commit 2), design system (Commit 3), marketing pages, MVP features, and deployment are clearly delineated.
+
+## ADR-011: Content Configuration Module
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: Marketing copy and structured data (packages, FAQs, trust signals) should not be hardcoded in components. Components should be reusable and driven by data.
+- **Decision**: Create a `src/content/` module with typed configuration files (`site.ts`, `packages.ts`, `faqs.ts`, `trust.ts`) that export plain data objects consumed by components.
+- **Consequences**:
+  - Components receive data as props, making them testable and reusable
+  - Content changes do not require component changes
+  - Proof-placeholder content is clearly labeled and separate from real copy
+  - Future CMS integration can replace these files with API calls transparently
+
+## ADR-012: Analytics Interface (No Vendor Lock-in)
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: The application needs to track user interactions but should not commit to a specific analytics vendor at this stage.
+- **Decision**: Define a typed analytics interface in `src/lib/analytics.ts` with named event constants. No vendor integration or client-side tracking calls yet.
+- **Consequences**:
+  - Event types are centralized and type-safe
+  - Adding a vendor in a future milestone requires only implementing the interface
+  - No runtime overhead when analytics are disabled
+  - Event names follow a consistent `entity_action` convention

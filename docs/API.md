@@ -109,12 +109,18 @@ Reserved paths for future API endpoints:
 | POST   | `/api/leads`  | Submit a new lead (server action preferred) |
 | GET    | `/api/health` | Health check endpoint                       |
 
-## Analytics Events (Planned)
+## Analytics Events
 
-| Event            | Trigger                 | Data                      |
-| ---------------- | ----------------------- | ------------------------- |
-| `lead_submitted` | Form submission success | `{ name, email, source }` |
-| `lead_failed`    | Form submission error   | `{ error, source }`       |
-| `page_view`      | Page load               | `{ path, referrer }`      |
+| Event                  | Trigger                  | Data             |
+| ---------------------- | ------------------------ | ---------------- |
+| `homepage_view`        | Homepage load            | `{ path }`       |
+| `package_view`         | Package page viewed      | `{ package_id }` |
+| `package_selected`     | User selects a package   | `{ package_id }` |
+| `form_started`         | User begins form         | `{ form_id }`    |
+| `form_completed`       | User completes form      | `{ form_id }`    |
+| `free_trial_requested` | User requests free trial | `{ source }`     |
+| `contact_submitted`    | Contact form submitted   | `{ source }`     |
+
+Events are defined as typed constants in `src/lib/analytics.ts`. No vendor integration is implemented yet; this interface is reserved for Milestone 5.
 
 Events are logged to the analytics provider (future) and may be stored in a separate `analytics_events` table.

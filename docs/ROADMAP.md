@@ -27,7 +27,19 @@
 - [x] README.md updated
 - [x] .env.example
 
-### Milestone 3: Marketing Content Pages
+### Milestone 3: Design System & Layout (Completed — Commit 3)
+
+- [x] Premium token-based visual system (globals.css CSS custom properties)
+- [x] Reusable UI components: Button, Container, Badge, SectionHeading, Card
+- [x] Shared Header with responsive nav, mobile menu, skip-to-content, CSS/SVG logo
+- [x] Shared Footer component
+- [x] Route shells: /packages, /how-it-works, /why-roofline, /faq, /contact, /get-started, /thank-you
+- [x] Content configuration module: site.ts, packages.ts, faqs.ts, trust.ts
+- [x] Analytics interface with named events
+- [x] Self-authored logo SVG and favicon strategy
+- [x] Updated documentation
+
+### Milestone 4: Marketing Content Pages
 
 - [ ] Services page (/services)
 - [ ] Packages/pricing page (/packages)
@@ -71,11 +83,12 @@
 
 ## Timeline
 
-| Milestone             | Target     | Status     |
-| --------------------- | ---------- | ---------- |
-| 1. Foundation         | 2026-07-28 | ✅ Done    |
-| 2. Documentation      | 2026-07-28 | ✅ Done    |
-| 3. Marketing Pages    | TBD        | ⏳ Pending |
-| 4. Lead Capture MVP   | TBD        | ⏳ Pending |
-| 5. SEO & Polish       | TBD        | ⏳ Pending |
-| 6. Deployment & CI/CD | TBD        | ⏳ Pending |
+| Milestone                  | Target     | Status     |
+| -------------------------- | ---------- | ---------- |
+| 1. Foundation              | 2026-07-28 | ✅ Done    |
+| 2. Documentation           | 2026-07-28 | ✅ Done    |
+| 3. Design System & Layout  | 2026-07-28 | ✅ Done    |
+| 4. Marketing Content Pages | TBD        | ⏳ Pending |
+| 5. Lead Capture MVP        | TBD        | ⏳ Pending |
+| 6. SEO & Polish            | TBD        | ⏳ Pending |
+| 7. Deployment & CI/CD      | TBD        | ⏳ Pending |

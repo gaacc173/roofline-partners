@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **Node.js** 18+ (LTS recommended)
+- **Node.js** 20.9+ (LTS recommended)
 - **npm** 9+ (bundled with Node)
 - **Git** for version control
 
@@ -51,18 +51,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Available Scripts
 
-| Script                 | Description                        |
-| ---------------------- | ---------------------------------- |
-| `npm run dev`          | Start dev server with Turbopack    |
-| `npm run build`        | Create production build            |
-| `npm run start`        | Start production server            |
-| `npm run lint`         | Run ESLint                         |
-| `npm run lint:fix`     | Run ESLint with auto-fix           |
-| `npm run test`         | Run Vitest unit tests              |
-| `npm run test:watch`   | Run Vitest in watch mode           |
-| `npm run typecheck`    | TypeScript type checking           |
-| `npm run format`       | Format all files with Prettier     |
-| `npm run format:check` | Check formatting without modifying |
+| Script                 | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `npm run dev`          | Start dev server (Turbopack by default)     |
+| `npm run build`        | Create production build                     |
+| `npm run start`        | Start production server                     |
+| `npm run lint`         | Run ESLint via the ESLint CLI               |
+| `npm run lint:fix`     | Run ESLint with auto-fix via the ESLint CLI |
+| `npm run test`         | Run Vitest unit tests                       |
+| `npm run test:watch`   | Run Vitest in watch mode                    |
+| `npm run typecheck`    | TypeScript type checking                    |
+| `npm run format`       | Format all files with Prettier              |
+| `npm run format:check` | Check formatting without modifying          |
 
 ## Testing
 

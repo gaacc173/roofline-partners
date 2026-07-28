@@ -61,6 +61,14 @@ This document covers the security posture, practices, and considerations for the
 - Deployment previews isolated from production
 - Role-based access control for team members
 
+## Analytics Privacy
+
+- Analytics interface defined in `src/lib/analytics.ts` with typed event constants
+- No vendor integration or client-side tracking calls in the current phase
+- When implemented, analytics will collect only necessary event data
+- No personally identifiable information (PII) sent to analytics providers
+- No third-party JavaScript without audit (per ADR-009 Asset Policy)
+
 ## Asset Security
 
 - Only self-generated SVGs and CSS-based assets used

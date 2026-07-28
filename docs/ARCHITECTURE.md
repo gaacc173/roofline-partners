@@ -6,17 +6,17 @@ Roofline Partners is a premium roofing company website built with **Next.js App 
 
 ## Technology Stack
 
-| Layer             | Technology                               |
-| ----------------- | ---------------------------------------- |
-| Framework         | Next.js 16 (App Router, Turbopack)       |
-| Language          | TypeScript (strict mode)                 |
-| Styling           | Tailwind CSS v4                          |
-| Testing           | Vitest (unit), Playwright (E2E, planned) |
-| Linting           | ESLint 9 (next lint config)              |
-| Formatting        | Prettier 3                               |
-| Target Deployment | Vercel                                   |
-| Database (future) | Supabase PostgreSQL                      |
-| Email (future)    | Resend                                   |
+| Layer             | Technology                                    |
+| ----------------- | --------------------------------------------- |
+| Framework         | Next.js 16 (App Router, Turbopack by default) |
+| Language          | TypeScript (strict mode)                      |
+| Styling           | Tailwind CSS v4                               |
+| Testing           | Vitest (unit), Playwright (E2E, planned)      |
+| Linting           | ESLint 9 (ESLint CLI, no `next lint`)         |
+| Formatting        | Prettier 3                                    |
+| Target Deployment | Vercel                                        |
+| Database (future) | Supabase PostgreSQL                           |
+| Email (future)    | Resend                                        |
 
 ## Directory Structure
 

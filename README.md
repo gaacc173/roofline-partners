@@ -23,18 +23,18 @@ public/         # Static assets (images, favicons, SVGs)
 
 ## Scripts
 
-| Script                 | Description                     |
-| ---------------------- | ------------------------------- |
-| `npm run dev`          | Start dev server with Turbopack |
-| `npm run build`        | Production build                |
-| `npm run start`        | Start production server         |
-| `npm run lint`         | Run ESLint                      |
-| `npm run lint:fix`     | Run ESLint with auto-fix        |
-| `npm run test`         | Run Vitest unit tests           |
-| `npm run test:watch`   | Run Vitest in watch mode        |
-| `npm run typecheck`    | TypeScript type checking        |
-| `npm run format`       | Format with Prettier            |
-| `npm run format:check` | Check formatting                |
+| Script                 | Description                             |
+| ---------------------- | --------------------------------------- |
+| `npm run dev`          | Start dev server (Turbopack by default) |
+| `npm run build`        | Production build                        |
+| `npm run start`        | Start production server                 |
+| `npm run lint`         | Run ESLint                              |
+| `npm run lint:fix`     | Run ESLint with auto-fix                |
+| `npm run test`         | Run Vitest unit tests                   |
+| `npm run test:watch`   | Run Vitest in watch mode                |
+| `npm run typecheck`    | TypeScript type checking                |
+| `npm run format`       | Format with Prettier                    |
+| `npm run format:check` | Check formatting                        |
 
 ## Environment Variables
 

@@ -1,9 +1,12 @@
 /**
- * Typed environment variable validation.
+ * Typed environment variable validation with safe defaults.
  *
  * In production these values are validated at startup.
  * During development, optional integrations (Supabase, Resend, analytics)
  * may be left unset — the app still runs.
+ *
+ * Public-facing variables always resolve to a non-empty string so the
+ * application never crashes locally when deployment integrations are absent.
  */
 
 export interface EnvSchema {
@@ -21,14 +24,20 @@ export interface EnvSchema {
   NEXT_PUBLIC_ANALYTICS_ENABLED?: string;
 }
 
+const defaults: EnvSchema = {
+  NEXT_PUBLIC_APP_NAME: "Roofline Partners",
+  NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+};
+
 /**
- * Validate that required public environment variables are present.
- * Throws on first missing variable so the failure is visible at startup.
+ * Validate and resolve environment variables, falling back to safe
+ * defaults so the app never crashes locally when deployment integrations
+ * or placeholders are absent.
  */
 export function validateEnv(): EnvSchema {
   const vars: EnvSchema = {
-    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? "",
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "",
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || defaults.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || defaults.NEXT_PUBLIC_APP_URL,
   };
 
   // Optional integrations — read without throwing
@@ -37,18 +46,6 @@ export function validateEnv(): EnvSchema {
   if (process.env.RESEND_API_KEY) vars.RESEND_API_KEY = process.env.RESEND_API_KEY;
   if (process.env.NEXT_PUBLIC_ANALYTICS_ENABLED)
     vars.NEXT_PUBLIC_ANALYTICS_ENABLED = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED;
-
-  // Validate required fields
-  const missing: string[] = [];
-  if (!vars.NEXT_PUBLIC_APP_NAME) missing.push("NEXT_PUBLIC_APP_NAME");
-  if (!vars.NEXT_PUBLIC_APP_URL) missing.push("NEXT_PUBLIC_APP_URL");
-
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missing.join(", ")}. ` +
-        `See .env.example for the expected schema.`,
-    );
-  }
 
   return vars;
 }

@@ -10,13 +10,30 @@
 
 ## Current State (Foundation — Commit 1)
 
-- Next.js 16 App Router project scaffolded with TypeScript, Tailwind CSS, ESLint, Prettier, Vitest
+- Next.js 16 App Router project scaffolded with TypeScript, Tailwind CSS v4, ESLint, Prettier, Vitest
 - Branded home page with "Request a Consultation" and "View Services" CTAs
-- Typed environment validation module for deferred integrations
+- Typed environment validation module with safe defaults (no local startup failures)
 - Lead data utilities (`sanitiseLead`, `stripHtml`, `isLeadValid`) ready for server actions
 - TDD cycle demonstrated: failing test → implementation → passing test
 - All tooling scripts configured (dev, build, start, lint, test, typecheck, format)
 - Playwright installed and Chromium browser downloaded for future E2E tests
+
+## Commit 2: Architecture Documentation
+
+- docs/ARCHITECTURE.md, PROJECT_MEMORY.md, DECISIONS.md, ROADMAP.md, SECURITY.md, SETUP.md, API.md
+- .env.example
+
+## Commit 3: Design System and Shared Marketing Layout
+
+- Premium token-based visual system in globals.css (CSS custom properties)
+- Reusable UI components: Button, Container, Badge, SectionHeading, Card
+- Shared Header (responsive nav with accessible mobile menu, skip-to-content, CSS/SVG logo)
+- Shared Footer component
+- Route shells: /packages, /how-it-works, /why-roofline, /faq, /contact, /get-started, /thank-you
+- Content configuration module: site.ts, packages.ts, faqs.ts, trust.ts
+- Analytics interface with named events (no vendor integration)
+- Self-authored logo SVG and favicon strategy
+- Updated documentation reflecting all changes
 
 ## Brand
 
@@ -44,15 +61,15 @@
 
 ## Key Files
 
-| File                         | Purpose                       |
-| ---------------------------- | ----------------------------- |
-| `src/app/layout.tsx`         | Root layout with SEO metadata |
-| `src/app/page.tsx`           | Home page component           |
-| `src/lib/env.ts`             | Environment validation        |
-| `src/lib/lead-utils.ts`      | Lead data utilities           |
-| `src/lib/lead-utils.test.ts` | TDD test for sanitiseLead     |
-| `.env.example`               | Documented env var schema     |
-| `docs/`                      | Architecture documentation    |
+| File                         | Purpose                                   |
+| ---------------------------- | ----------------------------------------- |
+| `src/app/layout.tsx`         | Root layout with SEO metadata             |
+| `src/app/globals.css`        | Tailwind imports, CSS design tokens       |
+| `src/lib/env.ts`             | Environment validation with safe defaults |
+| `src/lib/lead-utils.ts`      | Lead data utilities                       |
+| `src/lib/lead-utils.test.ts` | TDD test for sanitiseLead                 |
+| `.env.example`               | Documented env var schema                 |
+| `docs/`                      | Architecture documentation                |
 
 ## Living Document
 
