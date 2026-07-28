@@ -59,6 +59,15 @@
 - `supabase/migrations/202607280001_create_leads.sql` creates the future-admin-ready `leads` model with RLS enabled and no public policies
 - Form submissions require deployment-only Supabase and Resend configuration; when absent, requests fail safely and are never treated as saved
 
+## Final SEO and Security Hardening
+
+- Generated Open Graph image, sitemap, robots directives, canonical metadata, and Organization/Service JSON-LD use the Next.js App Router metadata conventions
+- Browser-native constraint validation remains enabled for fast client feedback; the server action remains authoritative
+- CSP, frame denial, MIME-sniff prevention, referrer policy, permissions policy, and HSTS are explicitly configured in `next.config.ts`
+- The lead action confirms that `trial` and paid-package sources cannot be swapped by a manipulated form field
+- GitHub Actions now verifies formatting, linting, tests, type checking, and production build on `main` pushes and pull requests
+- `npm audit --omit=dev` currently reports three high-severity inherited Next.js dependency advisories. The only automated remediation attempts an unsafe downgrade; see `SECURITY.md` and upgrade Next.js in a dedicated maintenance task when a compatible patched release is available
+
 ## Brand
 
 - **Name**: Roofline Partners

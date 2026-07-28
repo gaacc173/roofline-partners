@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Header, Footer } from "@/components/layout";
 import { site } from "@/content/site";
 import { validateEnv } from "@/lib/env";
+import { organizationJsonLd, serviceJsonLd } from "@/lib/structured-data";
+import { StructuredData } from "@/components/seo/StructuredData";
 import "@/app/globals.css";
 
 const env = validateEnv();
@@ -36,6 +38,9 @@ export const metadata: Metadata = {
     title: site.metadata.defaultTitle,
     description: site.metadata.description,
   },
+  alternates: {
+    canonical: "/",
+  },
   robots: {
     index: true,
     follow: true,
@@ -50,6 +55,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
+        <StructuredData data={organizationJsonLd()} />
+        <StructuredData data={serviceJsonLd()} />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-zinc-50"

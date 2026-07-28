@@ -61,21 +61,19 @@
 
 ### Milestone 6: SEO & Polish
 
-- [ ] Favicon (generated SVG-based)
-- [ ] OG images (generated via @vercel/og or static)
-- [ ] robots.txt
-- [ ] sitemap.xml
-- [ ] Open Graph meta tags (all pages)
-- [ ] Twitter card meta tags
-- [ ] Structured data (JSON-LD) on all pages
-- [ ] Performance audit (Lighthouse)
-- [ ] Accessibility audit (axe)
+- [x] Favicon (self-authored SVG-based)
+- [x] Generated Open Graph image
+- [x] robots.txt and sitemap.xml metadata routes
+- [x] Open Graph and Twitter card metadata baseline
+- [x] Organization and Service structured data
+- [ ] Performance audit (Lighthouse) against a deployed preview or production URL
+- [ ] Accessibility audit (axe) against a deployed preview or production URL
 
 ### Milestone 7: Deployment & CI/CD
 
 - [ ] Vercel deployment configuration
 - [ ] Production environment variables
-- [ ] CI pipeline (lint, typecheck, test, build on PR)
+- [x] CI pipeline (format, lint, typecheck, test, build on PR)
 - [ ] Health check endpoint
 - [ ] Rollback procedures documented
 - [ ] Admin capability seam (no full dashboard)

@@ -74,9 +74,10 @@ Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
 ## SEO Configuration
 
 - `Metadata` object in `layout.tsx` defines title, description, open graph, and Twitter card
-- `robots: { index: true, follow: true }` for full indexing
-- JSON-LD for **Organization** and **Service** schema (to be added in MVP)
-- Favicon and OG images in `public/` (to be added in MVP)
+- Generated Open Graph image via `src/app/opengraph-image.tsx` uses only self-authored visual design
+- `robots.ts` allows public marketing routes but excludes qualification and thank-you routes; `sitemap.ts` lists indexable routes
+- JSON-LD for **Organization** and **Service** schema is emitted from typed configuration
+- `src/app/icon.svg` provides the self-authored App Router favicon
 
 ## Security Model
 

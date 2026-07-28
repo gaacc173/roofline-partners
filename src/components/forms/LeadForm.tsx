@@ -37,7 +37,6 @@ export function LeadForm({ source, selectedPackage, submitLabel }: LeadFormProps
       ref={formRef}
       action={formAction}
       className="space-y-5"
-      noValidate
       onFocusCapture={() => {
         if (startFieldRef.current && !startFieldRef.current.value) {
           startFieldRef.current.value = String(Date.now());

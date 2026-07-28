@@ -39,12 +39,16 @@ The in-process limiter is intentionally only a local safety net; it cannot provi
 - Lockfile (`package-lock.json`) committed to version control
 - No dev dependencies in production builds
 
+### Current Dependency Advisory
+
+`npm audit --omit=dev` currently reports high-severity advisories inherited from the installed Next.js `16.2.12` dependency tree (`postcss` and `sharp`). The audit's only offered automated remediation is a forced downgrade to Next.js 9, which is unsafe and incompatible with this App Router project. Do not run `npm audit fix --force`. Track a compatible upstream Next.js release that resolves these advisories, upgrade in a dedicated tested maintenance change, and re-run the audit before production launch.
+
 ## Next.js Security Features
 
-- **CSP headers** — Managed by Vercel deployment; custom policies can be added via `next.config.ts`
-- **X-Frame-Options** — will be set explicitly in the application security-header policy before the lead endpoint is released
-- **CSRF protection** — the lead endpoint will enforce same-origin checks and request verification; no mutation endpoint exists yet
-- **XSS prevention** — React escapes by default; `stripHtml()` adds server-side defense
+- **CSP headers** — explicit `Content-Security-Policy` limits scripts, connections, forms, frames, objects, and base URLs to the application boundary
+- **Browser protections** — `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, strict referrer policy, a restrictive permissions policy, and production HSTS are set through `next.config.ts`
+- **CSRF protection** — the Server Action verifies same-origin `Origin`/`Host` before mutating data
+- **XSS prevention** — React escapes rendered text; the server schema also strips markup from stored free text
 
 ## Supabase Security (Future)
 

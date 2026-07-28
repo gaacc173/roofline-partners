@@ -8,6 +8,7 @@ import { SupabaseLeadRepository } from "@/features/leads/lead-repository";
 import { ResendLeadNotificationService } from "@/features/leads/notification-service";
 import { leadSources, leadSubmissionSchema, type LeadSource } from "@/features/leads/lead-schema";
 import { isRateLimited } from "@/features/leads/rate-limit";
+import { getPackageById } from "@/content/packages";
 
 export interface LeadFormState {
   error?: string;
@@ -70,6 +71,16 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
       error: "Please correct the highlighted fields.",
       fieldErrors: parsed.error.flatten().fieldErrors,
     };
+  }
+
+  const selectedPackage = parsed.data.selectedPackage
+    ? getPackageById(parsed.data.selectedPackage)
+    : undefined;
+  if (
+    (source === "package" && (!selectedPackage || selectedPackage.id === "trial")) ||
+    (source === "trial" && selectedPackage?.id !== "trial")
+  ) {
+    return { error: "Choose a valid package before submitting your request." };
   }
 
   const submittedAt = Number(parsed.data.formStartedAt);
