@@ -62,6 +62,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run lint:fix`     | Run ESLint with auto-fix via the ESLint CLI |
 | `npm run test`         | Run Vitest unit tests                       |
 | `npm run test:watch`   | Run Vitest in watch mode                    |
+| `npm run test:e2e`     | Run Playwright browser smoke tests          |
 | `npm run typecheck`    | TypeScript type checking                    |
 | `npm run format`       | Format all files with Prettier              |
 | `npm run format:check` | Check formatting without modifying          |
@@ -76,14 +77,16 @@ npm run test
 
 Tests are located alongside source files (`*.test.ts` and `*.test.tsx`). The lead schema and responsive header behavior are covered alongside their modules.
 
-### End-to-End Tests (Future)
+### Browser Smoke Tests
 
-Playwright is installed for a future browser suite. No Playwright configuration or browser tests exist yet.
+Playwright covers the highest-value public paths: package selection into the qualification form, the liveness endpoint, and robots/sitemap responses. Install the Chromium browser once on a new machine:
 
 ```bash
-# Run E2E tests when ready
+npx playwright install chromium
 npx playwright test
 ```
+
+The suite starts a local Next.js development server automatically. It does not submit a real lead or require Supabase/Resend credentials.
 
 ## TypeScript
 
@@ -140,6 +143,7 @@ PORT=3001 npm run dev
    - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `LEAD_NOTIFICATION_EMAIL` are required before accepting submissions.
 4. Enable Vercel Firewall rate limiting or place Cloudflare in front of the site before exposing the lead form. The in-process limiter is not a distributed production control.
 5. Deploy a preview, submit a controlled test request, confirm a row is stored and the internal email arrives, then deploy production.
-6. Configure the canonical production URL in search-console tooling and submit `/sitemap.xml` after the site is publicly accessible.
+6. Confirm `https://your-domain.example/api/health` returns `{ "status": "ok" }` and configure uptime monitoring against that URL.
+7. Configure the canonical production URL in search-console tooling and submit `/sitemap.xml` after the site is publicly accessible.
 
 Never place `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, or Turnstile secrets in a `NEXT_PUBLIC_` variable.

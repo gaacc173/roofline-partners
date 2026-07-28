@@ -6,7 +6,7 @@
 
 - [x] Next.js 16 App Router scaffold
 - [x] TypeScript, Tailwind CSS v4, ESLint, Prettier
-- [x] Vitest installed; Playwright retained for a future E2E suite
+- [x] Vitest and Playwright installed with unit and browser smoke test scripts
 - [x] Branded home page
 - [x] Environment validation
 - [x] Lead data utilities with TDD
@@ -46,7 +46,7 @@
 - [x] How it works, why Roofline, FAQ, and contact route shells
 - [x] Content/configuration modules for public copy and packages
 - [x] Complete premium homepage and shared conversion sections
-- [ ] Contact page with lead form (/contact)
+- [x] Contact page with lead form (/contact)
 - [ ] Verified testimonial/social-proof section once approved evidence is supplied
 - [ ] JSON-LD: Organization + Service schemas
 
@@ -71,22 +71,24 @@
 
 ### Milestone 7: Deployment & CI/CD
 
-- [ ] Vercel deployment configuration
+- [x] Vercel deployment path documented
 - [ ] Production environment variables
-- [x] CI pipeline (format, lint, typecheck, test, build on PR)
-- [ ] Health check endpoint
+- [x] CI pipeline (format, lint, typecheck, unit/browser tests, build on PR)
+- [x] Health check endpoint (`/api/health`)
 - [ ] Rollback procedures documented
 - [ ] Admin capability seam (no full dashboard)
 - [ ] Monitoring & error tracking setup
 
 ## Timeline
 
-| Milestone                  | Target     | Status     |
-| -------------------------- | ---------- | ---------- |
-| 1. Foundation              | 2026-07-28 | ✅ Done    |
-| 2. Documentation           | 2026-07-28 | ✅ Done    |
-| 3. Design System & Layout  | 2026-07-28 | ✅ Done    |
-| 4. Marketing Content Pages | 2026-07-28 | ✅ Done    |
-| 5. Lead Capture MVP        | TBD        | ⏳ Pending |
-| 6. SEO & Polish            | TBD        | ⏳ Pending |
-| 7. Deployment & CI/CD      | TBD        | ⏳ Pending |
+| Milestone                  | Target     | Status    |
+| -------------------------- | ---------- | --------- |
+| 1. Foundation              | 2026-07-28 | ✅ Done   |
+| 2. Documentation           | 2026-07-28 | ✅ Done   |
+| 3. Design System & Layout  | 2026-07-28 | ✅ Done   |
+| 4. Marketing Content Pages | 2026-07-28 | ✅ Done   |
+| 5. Lead Capture MVP        | 2026-07-28 | ✅ Done   |
+| 6. SEO & Polish            | 2026-07-28 | ✅ Done*  |
+| 7. Deployment & CI/CD      | 2026-07-29 | ✅ Ready* |
+
+`*` Code and documentation are ready; final external launch prerequisites remain environment and provider configuration, distributed rate limiting, and deployed Lighthouse/axe checks.

@@ -35,13 +35,15 @@ The in-process limiter is intentionally only a local safety net; it cannot provi
 ## Dependencies
 
 - All dependencies are from trusted registries (npm, official Next.js ecosystem)
-- `npm audit` run before each release
+- `npm audit --omit=dev` runs in CI before each release; this is the production dependency gate
 - Lockfile (`package-lock.json`) committed to version control
 - No dev dependencies in production builds
 
-### Current Dependency Advisory
+### Dependency Maintenance
 
-`npm audit --omit=dev` currently reports high-severity advisories inherited from the installed Next.js `16.2.12` dependency tree (`postcss` and `sharp`). The audit's only offered automated remediation is a forced downgrade to Next.js 9, which is unsafe and incompatible with this App Router project. Do not run `npm audit fix --force`. Track a compatible upstream Next.js release that resolves these advisories, upgrade in a dedicated tested maintenance change, and re-run the audit before production launch.
+The lockfile pins compatible patched `postcss` and `sharp` versions through npm `overrides` while the application remains on the tested Next.js `16.2.12` release. `npm audit --omit=dev` is clean after installation. Keep the overrides until the direct Next.js dependency adopts equivalent versions, then remove them in a dedicated tested maintenance change. Do not run `npm audit fix --force`; it proposes an unsafe downgrade to Next.js 9 for this App Router project.
+
+The full audit also reports a high-severity advisory in the ESLint 9 development-only dependency graph (`minimatch`/`brace-expansion`). A newer `brace-expansion` override was tested and rejected because it breaks ESLint 9's expected module API. Track the compatible ESLint/Next lint-stack upgrade separately; it is not shipped to the production runtime.
 
 ## Next.js Security Features
 
@@ -50,14 +52,19 @@ The in-process limiter is intentionally only a local safety net; it cannot provi
 - **CSRF protection** — the Server Action verifies same-origin `Origin`/`Host` before mutating data
 - **XSS prevention** — React escapes rendered text; the server schema also strips markup from stored free text
 
-## Supabase Security (Future)
+## Operational Checks
+
+- `GET /api/health` returns `{ "status": "ok" }` with `Cache-Control: no-store` and performs no provider calls.
+- Playwright browser smoke tests run against a local development server and cover the primary package-selection and SEO paths.
+
+## Supabase Security
 
 - Row Level Security (RLS) policies on `leads` table
 - Service role key stored server-side only (never client-exposed)
 - Anon key scoped to allowed operations only
 - Database migrations run through Supabase CLI or manual SQL
 
-## Resend Security (Future)
+## Resend Security
 
 - API key stored in server-side environment only
 - Email templates use server-side rendering

@@ -6,23 +6,24 @@ Roofline Partners is a premium roofing company website built with **Next.js App 
 
 ## Technology Stack
 
-| Layer             | Technology                                    |
-| ----------------- | --------------------------------------------- |
-| Framework         | Next.js 16 (App Router, Turbopack by default) |
-| Language          | TypeScript (strict mode)                      |
-| Styling           | Tailwind CSS v4                               |
-| Testing           | Vitest (unit), Playwright (E2E, planned)      |
-| Linting           | ESLint 9 (ESLint CLI, no `next lint`)         |
-| Formatting        | Prettier 3                                    |
-| Target Deployment | Vercel                                        |
-| Database (future) | Supabase PostgreSQL                           |
-| Email (future)    | Resend                                        |
+| Layer             | Technology                                      |
+| ----------------- | ----------------------------------------------- |
+| Framework         | Next.js 16 (App Router, Turbopack by default)   |
+| Language          | TypeScript (strict mode)                        |
+| Styling           | Tailwind CSS v4                                 |
+| Testing           | Vitest (unit), Playwright (browser smoke tests) |
+| Linting           | ESLint 9 (ESLint CLI, no `next lint`)           |
+| Formatting        | Prettier 3                                      |
+| Target Deployment | Vercel                                          |
+| Database          | Supabase PostgreSQL                             |
+| Email             | Resend                                          |
 
 ## Directory Structure
 
 ```
 src/
   app/
+    api/health/   # Cache-disabled deployment liveness endpoint
     layout.tsx    # Root layout with metadata (SEO, OG tags)
     page.tsx      # Config-driven premium home page
     globals.css   # Tailwind imports, CSS variables
@@ -51,10 +52,16 @@ User → Browser → Next.js App Router → Server Components
 
 - **Marketing experience** — homepage, packages, process, differentiation, FAQ, contact, and a query-aware package selection route render through a shared config-driven design system
 - **Environment resolution** — public site values have safe local defaults; `validateProductionEnvironment()` is reserved for release/deployment validation so contributors can run the shell without secrets
-- **Lead utilities** — pure functions for sanitising and validating lead data (ready for future server actions/API routes)
+- **Lead utilities** — pure functions for sanitising and validating lead data used by the server action
 - **Lead pipeline** — qualification and contact forms submit through a same-origin Server Action, persist through a `LeadRepository`, and notify through a `LeadNotificationService`
 
-### Planned State (MVP)
+### Operational Verification
+
+- `GET /api/health` provides a minimal liveness signal for Vercel checks and external uptime monitors.
+- Playwright smoke tests cover package-to-qualification navigation, the selected package contract, public SEO routes, and the health endpoint.
+- The health endpoint intentionally does not perform provider calls, so monitoring cannot create leads or incur notification/database traffic.
+
+### Lead Pipeline (MVP)
 
 ```
 Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
@@ -68,7 +75,7 @@ Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
 1. **App Router only** — no Pages Router; all routes under `src/app/`
 2. **Server Components by default** — client components only where interactivity is needed
 3. **Pure utility layer** — `src/lib/` contains framework-agnostic helpers
-4. **Deferred integrations** — Supabase and Resend are documented but not yet wired
+4. **Provider contracts** — Supabase and Resend are server-only adapters behind lead service interfaces
 5. **No payments in v1** — manual fulfillment workflow only
 
 ## SEO Configuration
@@ -84,6 +91,6 @@ Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
 - Public environment values resolved through `src/lib/env.ts`; production URL validation is run as part of deployment hardening
 - Lead data sanitised via `stripHtml()` before storage
 - No client-side secrets; all sensitive operations server-side
-- CSP headers managed by Vercel deployment config (future)
+- CSP and browser security headers managed in `next.config.ts`
 
 See [docs/SECURITY.md](./SECURITY.md) for the full security document.

@@ -36,13 +36,13 @@
 - **Decision**: Use Vitest with `node` environment for unit tests.
 - **Consequences**: Tests live alongside source files (`*.test.ts`); pure utilities in `src/lib/` are easily testable.
 
-## ADR-005: Playwright for Future E2E Testing
+## ADR-005: Playwright Browser Smoke Testing
 
 - **Status**: Accepted
 - **Date**: 2026-07-28
 - **Context**: End-to-end testing is needed once the application has interactive features.
-- **Decision**: Keep Playwright available for the lead-flow milestone. Browser tests are not claimed until a configuration and test suite exist.
-- **Consequences**: No E2E checks currently run; interactive component behavior is covered with Vitest and Testing Library where required.
+- **Decision**: Use Playwright for a small browser smoke suite covering the public conversion path, SEO metadata routes, and health endpoint. Keep provider-backed lead submission out of automated browser tests.
+- **Consequences**: Browser confidence covers public behavior without requiring external credentials or creating real leads.
 
 ## ADR-006: Deferred Supabase / Resend Integration
 
@@ -123,3 +123,26 @@
   - The lead row is saved before the notification attempt; notification failure is logged without losing a lead
   - Future CRM, queue/outbox, or provider changes replace adapters rather than public form logic
   - Rate limiting requires an edge/shared-provider control before public production launch because the local guard is not globally distributed
+
+## ADR-014: Dependency Overrides for Patched Transitives
+
+- **Status**: Accepted
+- **Date**: 2026-07-29
+- **Context**: The tested Next.js 16.2.12 release declares vulnerable transitive `postcss` and `sharp` ranges, while npm's automatic remediation proposes an incompatible Next.js 9 downgrade.
+- **Decision**: Pin compatible patched `postcss` and `sharp` versions with npm `overrides`, then verify the resulting tree, build, and audit output. Re-evaluate and remove the overrides when the direct framework dependency includes equivalent patches.
+- **Consequences**:
+  - `npm audit --omit=dev` is clean without a framework downgrade.
+  - Dependency upgrades must re-run install, `npm ls`, audit, tests, and build because the override changes framework transitive dependencies.
+  - The override is deliberately narrow and does not introduce a runtime package or custom patch.
+
+The full audit may still report a development-only ESLint 9 transitive advisory. A newer `brace-expansion` override was evaluated and rejected because it breaks ESLint 9's module API; that toolchain upgrade remains separate from this production dependency hardening.
+
+## ADR-015: Minimal Liveness Endpoint
+
+- **Status**: Accepted
+- **Date**: 2026-07-29
+- **Context**: Vercel and uptime monitoring need a safe signal that the application can serve requests without mutating data or depending on third-party providers.
+- **Decision**: Add `GET /api/health` returning a cache-disabled `{ status: "ok" }` response. Provider readiness remains a deployment smoke-test concern.
+- **Consequences**:
+  - Monitoring is cheap, deterministic, and safe to poll.
+  - A healthy liveness response does not imply Supabase or Resend availability.

@@ -13,10 +13,10 @@
 - Next.js 16 App Router project scaffolded with TypeScript, Tailwind CSS v4, ESLint, Prettier, Vitest
 - Branded home page with "Request a Consultation" and "View Services" CTAs
 - Typed environment validation module with safe defaults (no local startup failures)
-- Lead data utilities (`sanitiseLead`, `stripHtml`, `isLeadValid`) ready for server actions
+- Lead data utilities (`sanitiseLead`, `stripHtml`, `isLeadValid`) used by the server action
 - TDD cycle demonstrated: failing test → implementation → passing test
 - All tooling scripts configured (dev, build, start, lint, test, typecheck, format)
-- Playwright is installed for a future E2E suite; no browser tests or Playwright configuration exist yet
+- Playwright is configured with browser smoke tests for package selection, SEO routes, and the health endpoint
 
 ## Commit 2: Architecture Documentation
 
@@ -66,7 +66,7 @@
 - CSP, frame denial, MIME-sniff prevention, referrer policy, permissions policy, and HSTS are explicitly configured in `next.config.ts`
 - The lead action confirms that `trial` and paid-package sources cannot be swapped by a manipulated form field
 - GitHub Actions now verifies formatting, linting, tests, type checking, and production build on `main` pushes and pull requests
-- `npm audit --omit=dev` currently reports three high-severity inherited Next.js dependency advisories. The only automated remediation attempts an unsafe downgrade; see `SECURITY.md` and upgrade Next.js in a dedicated maintenance task when a compatible patched release is available
+- npm overrides pin patched `postcss` and `sharp` versions for the tested Next.js release; `npm audit --omit=dev` is clean. Revisit the overrides when Next.js ships equivalent direct dependency versions
 
 ## Brand
 
@@ -85,24 +85,26 @@
 
 ## Deferred / Future
 
-- Supabase Postgres integration (leads table, auth)
-- Resend email integration (lead notifications)
+- Authenticated Supabase admin inbox and CRM integration
+- Advanced Resend delivery workflows and retry/outbox processing
 - Admin capability seam (no full dashboard in v1)
-- Playwright E2E tests
+- Full authenticated/admin E2E coverage and deployed Lighthouse/axe audits
 - Content management for packages/testimonials
 - Analytics dashboard
 
 ## Key Files
 
-| File                         | Purpose                                                        |
-| ---------------------------- | -------------------------------------------------------------- |
-| `src/app/layout.tsx`         | Root layout with SEO metadata                                  |
-| `src/app/globals.css`        | Tailwind imports, CSS design tokens                            |
-| `src/lib/env.ts`             | Public environment resolution and production URL release check |
-| `src/lib/lead-utils.ts`      | Lead data utilities                                            |
-| `src/lib/lead-utils.test.ts` | TDD test for sanitiseLead                                      |
-| `.env.example`               | Documented env var schema                                      |
-| `docs/`                      | Architecture documentation                                     |
+| File                          | Purpose                                                        |
+| ----------------------------- | -------------------------------------------------------------- |
+| `src/app/layout.tsx`          | Root layout with SEO metadata                                  |
+| `src/app/globals.css`         | Tailwind imports, CSS design tokens                            |
+| `src/lib/env.ts`              | Public environment resolution and production URL release check |
+| `src/lib/lead-utils.ts`       | Lead data utilities                                            |
+| `src/lib/lead-utils.test.ts`  | TDD test for sanitiseLead                                      |
+| `src/app/api/health/route.ts` | Cache-disabled deployment liveness endpoint                    |
+| `tests/marketing.spec.ts`     | Playwright smoke coverage for public conversion paths          |
+| `.env.example`                | Documented env var schema                                      |
+| `docs/`                       | Architecture documentation                                     |
 
 ## Living Document
 

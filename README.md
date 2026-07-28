@@ -34,6 +34,7 @@ public/         # Static assets (images, favicons, SVGs)
 | `npm run lint:fix`     | Run ESLint with auto-fix                |
 | `npm run test`         | Run Vitest unit tests                   |
 | `npm run test:watch`   | Run Vitest in watch mode                |
+| `npm run test:e2e`     | Run Playwright browser smoke tests      |
 | `npm run typecheck`    | TypeScript type checking                |
 | `npm run format`       | Format with Prettier                    |
 | `npm run format:check` | Check formatting                        |
@@ -54,7 +55,7 @@ Copy `.env.example` to `.env.local` and fill in values as integrations are added
 
 ## Deployment
 
-Target platform: **Vercel**. See [docs/ROADMAP.md](./docs/ROADMAP.md) for deployment milestones.
+Target platform: **Vercel**. See [docs/SETUP.md](./docs/SETUP.md) for deployment steps and monitor `/api/health` after release.
 
 ## License
 

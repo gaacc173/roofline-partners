@@ -17,6 +17,16 @@ Visitor form
 
 The database insert is authoritative. Notification delivery is attempted afterwards; a temporary notification failure is logged but does not discard a saved lead.
 
+## Health Check
+
+`GET /api/health` is a cache-disabled, unauthenticated liveness endpoint intended for deployment checks and uptime monitoring. A healthy response is:
+
+```json
+{ "status": "ok" }
+```
+
+The endpoint verifies that the Next.js application can serve requests. It does not test Supabase or Resend connectivity; integration verification remains part of the controlled deployment smoke test.
+
 ## Configuration
 
 | Variable                    | Scope       | Purpose                                                                                 |
