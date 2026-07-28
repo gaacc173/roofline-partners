@@ -42,9 +42,9 @@ public/           # Static assets
 
 ```
 User → Browser → Next.js App Router → Server Components
-                                    → Server Actions (future)
-                                    → API Routes (future)
-                                    → Supabase (future)
+                                    → Server Action (lead submission)
+                                    → Supabase PostgreSQL
+                                    → Resend notification
 ```
 
 ### Current State (Shared Marketing Shell)
@@ -52,6 +52,7 @@ User → Browser → Next.js App Router → Server Components
 - **Marketing experience** — homepage, packages, process, differentiation, FAQ, contact, and a query-aware package selection route render through a shared config-driven design system
 - **Environment resolution** — public site values have safe local defaults; `validateProductionEnvironment()` is reserved for release/deployment validation so contributors can run the shell without secrets
 - **Lead utilities** — pure functions for sanitising and validating lead data (ready for future server actions/API routes)
+- **Lead pipeline** — qualification and contact forms submit through a same-origin Server Action, persist through a `LeadRepository`, and notify through a `LeadNotificationService`
 
 ### Planned State (MVP)
 

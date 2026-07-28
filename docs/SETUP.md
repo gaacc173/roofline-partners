@@ -27,15 +27,17 @@ NEXT_PUBLIC_APP_NAME="Roofline Partners"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-For future integrations:
+To accept real lead submissions, also configure:
 
 ```env
-# Supabase (Milestone 4)
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
+# Supabase (server-only)
+SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY=
 
-# Resend (Milestone 4)
+# Resend (server-only)
 RESEND_API_KEY=
+RESEND_FROM_EMAIL="Roofline Partners <leads@yourdomain.com>"
+LEAD_NOTIFICATION_EMAIL="owner@yourdomain.com"
 
 # Analytics (Milestone 4)
 NEXT_PUBLIC_ANALYTICS_ENABLED=false
@@ -72,11 +74,11 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run test
 ```
 
-Tests are located alongside source files (`*.test.ts`). The TDD example is in `src/lib/lead-utils.test.ts`.
+Tests are located alongside source files (`*.test.ts` and `*.test.tsx`). The lead schema and responsive header behavior are covered alongside their modules.
 
 ### End-to-End Tests (Future)
 
-Playwright is installed and Chromium is downloaded. E2E test files will be added in Milestone 4.
+Playwright is installed for a future browser suite. No Playwright configuration or browser tests exist yet.
 
 ```bash
 # Run E2E tests when ready
@@ -121,7 +123,7 @@ Check the reported errors and fix type mismatches.
 
 ### Dev server won't start
 
-Ensure `.env.local` has the required variables (`NEXT_PUBLIC_APP_NAME`, `NEXT_PUBLIC_APP_URL`).
+The marketing shell has safe local defaults. To submit real leads, configure the Supabase and Resend variables listed above.
 
 ### Port already in use
 

@@ -1,126 +1,76 @@
-# API
+# API and Lead Pipeline
 
-## Overview
+## Lead Submission
 
-The Roofline Partners application uses Next.js App Router conventions. Currently the foundation provides pure utility functions; API routes and server actions are planned for Milestone 4.
+The public forms use the Next.js Server Action `submitLead` in `src/app/actions/submit-lead.ts`. There is intentionally no public REST endpoint in v1.
 
-## Environment Variables
-
-### Required (Foundation)
-
-| Variable               | Type   | Description                          |
-| ---------------------- | ------ | ------------------------------------ |
-| `NEXT_PUBLIC_APP_NAME` | string | Display name shown in the UI         |
-| `NEXT_PUBLIC_APP_URL`  | string | Base URL of the deployed application |
-
-### Optional (Future Integrations)
-
-| Variable                        | Type   | Description                   |
-| ------------------------------- | ------ | ----------------------------- |
-| `SUPABASE_URL`                  | string | Supabase project URL          |
-| `SUPABASE_ANON_KEY`             | string | Supabase anonymous/public key |
-| `RESEND_API_KEY`                | string | Resend API key for email      |
-| `NEXT_PUBLIC_ANALYTICS_ENABLED` | string | `"true"` or `"false"`         |
-
-See `.env.example` for the full schema.
-
-## Lead Data Model
-
-### Supabase `leads` Table
-
-**Initial schema (Milestone 4):**
-
-```sql
-CREATE TABLE leads (
-  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name          TEXT NOT NULL,
-  email         TEXT NOT NULL,
-  phone         TEXT,
-  message       TEXT NOT NULL,
-  status        TEXT NOT NULL DEFAULT 'new',
-  source        TEXT DEFAULT 'website',
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-COMMENT ON TABLE leads IS 'Incoming lead submissions from the website contact form.';
-COMMENT ON COLUMN leads.status IS 'new | in_progress | contacted | converted | dismissed';
-COMMENT ON COLUMN leads.source IS 'website | referral | social | other';
+```text
+Visitor form
+  → browser validation and accessible feedback
+  → Server Action same-origin verification
+  → honeypot, timing, process-local rate-limit guard
+  → Zod validation and normalization
+  → Supabase `leads` insert through LeadRepository
+  → Resend internal notification through LeadNotificationService
+  → /thank-you redirect
 ```
 
-**Future fields (planned, not yet implemented):**
+The database insert is authoritative. Notification delivery is attempted afterwards; a temporary notification failure is logged but does not discard a saved lead.
 
-```sql
--- These columns may be added in later milestones:
--- service_interest  TEXT          -- Which service the lead is interested in
--- property_type     TEXT          -- residential | commercial
--- budget_range      TEXT          -- Client-provided budget
--- scheduled_date    TIMESTAMPTZ   -- Scheduled consultation date
--- notes             TEXT          -- Internal admin notes
--- assigned_to       UUID          -- FK to admin users table
-```
+## Configuration
 
-### Lead Data Flow
+| Variable                    | Scope       | Purpose                                                                                 |
+| --------------------------- | ----------- | --------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_APP_URL`       | Public      | Canonical site URL for metadata                                                         |
+| `SUPABASE_URL`              | Server only | Supabase project URL                                                                    |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server only | Service role for server-side lead inserts; never expose it in a `NEXT_PUBLIC_` variable |
+| `RESEND_API_KEY`            | Server only | Resend API access                                                                       |
+| `RESEND_FROM_EMAIL`         | Server only | Verified Resend sender                                                                  |
+| `LEAD_NOTIFICATION_EMAIL`   | Server only | Internal receiving address                                                              |
+| `TURNSTILE_SECRET_KEY`      | Server only | Reserved CAPTCHA integration seam                                                       |
 
-```
-1. User submits contact form
-2. Client-side validation (React Hook Form, future)
-3. Server Action receives form data
-4. sanitiseLead() strips HTML, trims whitespace, lowercases email
-5. isLeadValid() checks required fields and email format
-6. Supabase INSERT into leads table
-7. Resend sends notification email
-8. Analytics event logged
-```
+## Lead Model
 
-## Server Actions (Planned)
+Migration: `supabase/migrations/202607280001_create_leads.sql`
 
-```typescript
-// src/app/actions/submit-lead.ts (future)
-"use server";
+### Initial operational fields
 
-import { sanitiseLead, isLeadValid, type LeadData } from "@/lib/lead-utils";
-import { createClient } from "@supabase/supabase-js";
+| Field                                | Notes                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| `id`, `created_at`, `updated_at`     | UUID and timestamps                                                    |
+| `status`                             | `new`, `reviewing`, `contacted`, `qualified`, `converted`, or `closed` |
+| `source`                             | `package`, `trial`, or `contact`                                       |
+| `name`, `email`, `phone`, `username` | Contact details; username is optional                                  |
+| `preferred_contact_method`           | WhatsApp, Telegram, Email, or SMS                                      |
+| `company_name`, `service_area`       | Qualification context                                                  |
+| `selected_package`                   | Optional for general contact requests                                  |
+| `best_contact_time`, `notes`         | Follow-up context                                                      |
+| `consent_timestamp`                  | Consent record                                                         |
 
-export async function submitLead(data: LeadData) {
-  const cleaned = sanitiseLead(data);
+### Admin/CRM-ready fields
 
-  if (!isLeadValid(cleaned)) {
-    return { error: "Invalid lead data" };
-  }
+`assigned_to`, `lifecycle_stage`, `last_contacted_at`, and `conversion_value` exist now so a future authenticated inbox, filtering, exports, CRM sync, and sales reporting can be added without a data migration.
 
-  // Supabase INSERT — future implementation
-  // const { error } = await supabase.from("leads").insert([cleaned]);
-  // if (error) return { error: "Failed to submit" };
+RLS is enabled and no policy grants public table access. The server action writes through the server-only Supabase service role.
 
-  // Resend email — future implementation
-  // await resend.emails.send({ ... });
+## Provider Boundaries
 
-  return { success: true };
-}
-```
+- `LeadRepository` abstracts persistence. `SupabaseLeadRepository` currently implements it through Supabase PostgREST.
+- `LeadNotificationService` abstracts notifications. `ResendLeadNotificationService` currently implements it through Resend’s API.
+- `LeadSubmissionService` orchestrates the use case and is unaware of framework routes or provider HTTP details.
 
-## API Routes (Planned)
-
-Reserved paths for future API endpoints:
-
-| Method | Path          | Description                                 |
-| ------ | ------------- | ------------------------------------------- |
-| POST   | `/api/leads`  | Submit a new lead (server action preferred) |
-| GET    | `/api/health` | Health check endpoint                       |
+These contracts are the extension points for a CRM adapter, queue/outbox delivery, a future admin inbox, or a new provider.
 
 ## Analytics Events
 
-| Event                  | Trigger                  | Data             |
-| ---------------------- | ------------------------ | ---------------- |
-| `homepage_view`        | Homepage load            | `{ path }`       |
-| `package_view`         | Package page viewed      | `{ package_id }` |
-| `package_selected`     | User selects a package   | `{ package_id }` |
-| `form_started`         | User begins form         | `{ form_id }`    |
-| `form_completed`       | User completes form      | `{ form_id }`    |
-| `free_trial_requested` | User requests free trial | `{ source }`     |
-| `contact_submitted`    | Contact form submitted   | `{ source }`     |
+The typed event names in `src/lib/analytics.ts` are reserved for a privacy-reviewed analytics integration. No PII is sent and no vendor script is enabled in this release.
 
-Events are defined as typed constants in `src/lib/analytics.ts`. No vendor integration is implemented yet; this interface is reserved for Milestone 5.
-
-Events are logged to the analytics provider (future) and may be stored in a separate `analytics_events` table.
+| Event                  | Intended trigger                       |
+| ---------------------- | -------------------------------------- |
+| `homepage_view`        | Home-page visit                        |
+| `package_view`         | Package detail or pricing view         |
+| `package_selected`     | Appointment package selection          |
+| `form_started`         | Qualification/contact form interaction |
+| `form_completed`       | Successful qualification submission    |
+| `free_trial_requested` | Trial request submitted                |
+| `contact_submitted`    | General contact inquiry submitted      |

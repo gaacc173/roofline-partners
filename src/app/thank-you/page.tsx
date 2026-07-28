@@ -1,32 +1,38 @@
-import { Container, SectionHeading } from "@/components/ui";
 import Link from "next/link";
+import { Container } from "@/components/ui";
 
 export const metadata = {
-  title: "Thank You — Roofline Partners",
-  description: "Thank you for reaching out to Roofline Partners.",
+  title: "Request received",
+  description: "Roofline Partners has received your request.",
 };
 
 export default function ThankYouPage() {
   return (
-    <Container size="md">
-      <SectionHeading
-        tag="Thank You"
-        title="We've Received Your Message"
-        subtitle="A member of our team will get back to you shortly."
-        align="center"
-      />
-      <div className="mx-auto max-w-md space-y-6 rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Thank you for your interest in Roofline Partners. We value your time and will respond
-          promptly.
-        </p>
-        <Link
-          href="/"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-zinc-200 bg-white px-5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-800"
-        >
-          Back to Home
-        </Link>
-      </div>
-    </Container>
+    <div className="py-20 sm:py-32">
+      <Container size="md">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-12">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-2xl font-bold text-amber-900 dark:bg-amber-300/15 dark:text-amber-200">
+            ✓
+          </span>
+          <p className="mt-7 text-sm font-bold tracking-[0.16em] text-amber-700 uppercase dark:text-amber-300">
+            Request received
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl dark:text-white">
+            Thank you for sharing your details.
+          </h1>
+          <p className="mt-5 text-base leading-7 text-slate-600 dark:text-slate-300">
+            A Roofline Partners team member will review your request and follow up using your
+            preferred contact method. Package availability, final terms, and payment are confirmed
+            separately.
+          </p>
+          <Link
+            href="/"
+            className="mt-8 inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+          >
+            Back to home
+          </Link>
+        </div>
+      </Container>
+    </div>
   );
 }

@@ -16,10 +16,13 @@ export interface EnvSchema {
   NEXT_PUBLIC_APP_URL: string;
   /** Supabase project URL — required once Supabase is integrated */
   SUPABASE_URL?: string;
-  /** Supabase anonymous key — required once Supabase is integrated */
-  SUPABASE_ANON_KEY?: string;
+  /** Supabase service role key — server-only, required for lead storage */
+  SUPABASE_SERVICE_ROLE_KEY?: string;
   /** Resend API key — required once email is integrated */
   RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  LEAD_NOTIFICATION_EMAIL?: string;
+  TURNSTILE_SECRET_KEY?: string;
   /** Feature flag for analytics */
   NEXT_PUBLIC_ANALYTICS_ENABLED?: string;
 }
@@ -42,12 +45,41 @@ export function validateEnv(): EnvSchema {
 
   // Optional integrations — read without throwing
   if (process.env.SUPABASE_URL) vars.SUPABASE_URL = process.env.SUPABASE_URL;
-  if (process.env.SUPABASE_ANON_KEY) vars.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY)
+    vars.SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (process.env.RESEND_API_KEY) vars.RESEND_API_KEY = process.env.RESEND_API_KEY;
+  if (process.env.RESEND_FROM_EMAIL) vars.RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
+  if (process.env.LEAD_NOTIFICATION_EMAIL)
+    vars.LEAD_NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL;
+  if (process.env.TURNSTILE_SECRET_KEY)
+    vars.TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
   if (process.env.NEXT_PUBLIC_ANALYTICS_ENABLED)
     vars.NEXT_PUBLIC_ANALYTICS_ENABLED = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED;
 
   return vars;
+}
+
+export function getLeadIntegrationConfig() {
+  const env = validateEnv();
+  const required = [
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+    env.RESEND_API_KEY,
+    env.RESEND_FROM_EMAIL,
+    env.LEAD_NOTIFICATION_EMAIL,
+  ];
+
+  if (required.some((value) => !value)) {
+    throw new Error("Lead submission integrations are not configured.");
+  }
+
+  return {
+    supabaseUrl: env.SUPABASE_URL!,
+    supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY!,
+    resendApiKey: env.RESEND_API_KEY!,
+    resendFromEmail: env.RESEND_FROM_EMAIL!,
+    notificationEmail: env.LEAD_NOTIFICATION_EMAIL!,
+  };
 }
 
 /**

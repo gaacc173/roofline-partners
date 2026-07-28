@@ -144,8 +144,9 @@ export const contactContent = {
   title: "Start with a conversation",
   description:
     "Have a question before choosing a package? Send your details and we will follow up through your preferred contact method.",
-  interimMessage:
-    "The secure contact form is being finalized. Until then, use the details below to begin a conversation.",
+  formTitle: "Tell us a little about your team",
+  formDescription: "We use this context to route your inquiry and prepare a useful follow-up.",
+  submitLabel: "Send my inquiry",
   phoneLabel: "Call",
 } as const;
 
@@ -166,4 +167,8 @@ export const getStartedContent = {
     "You will complete a short qualification form. A Roofline Partners team member then reviews fit before confirming availability, final terms, or payment.",
   contactCta: "Ask a question first",
   packageCta: "Compare all packages",
+  formTitle: "Complete your qualification request",
+  formDescription:
+    "Share a few details so our team can review fit before confirming availability or final terms.",
+  submitLabel: "Submit qualification request",
 } as const;

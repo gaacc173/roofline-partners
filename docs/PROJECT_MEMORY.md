@@ -51,6 +51,14 @@
 - `/get-started?package=<package-id>` reads the selected typed package configuration and explains the pending qualification path without implying an online purchase
 - No external images, social proof, credential claims, or unverified performance claims are used
 
+## Commit 5: Lead Capture Pipeline
+
+- `LeadForm` provides accessible qualification and contact forms with user-facing server validation feedback
+- `submitLead` is a same-origin Server Action protected by a honeypot, timing threshold, input schema, and local rate-limit safety net
+- `SupabaseLeadRepository` and `ResendLeadNotificationService` implement narrowly scoped provider contracts behind `LeadSubmissionService`
+- `supabase/migrations/202607280001_create_leads.sql` creates the future-admin-ready `leads` model with RLS enabled and no public policies
+- Form submissions require deployment-only Supabase and Resend configuration; when absent, requests fail safely and are never treated as saved
+
 ## Brand
 
 - **Name**: Roofline Partners

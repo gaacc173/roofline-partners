@@ -16,10 +16,15 @@ This document covers the security posture, practices, and considerations for the
 
 ### Lead Data
 
-1. **Input sanitisation** — All lead fields pass through `stripHtml()` to remove HTML tags
-2. **Validation** — `isLeadValid()` checks required fields and email format before processing
-3. **Storage** — Leads are stored in Supabase PostgreSQL with row-level security (future)
-4. **Transmission** — All API communication uses HTTPS (enforced by Vercel)
+1. **Validation** — every form field is parsed on the server with a strict Zod schema, allow-listed contact methods, length limits, and normalized email
+2. **Abuse controls** — hidden honeypot, minimum completion time, same-origin verification, and a process-local rate-limit safety net protect the Server Action
+3. **Storage** — leads are stored by a server-only Supabase service role; RLS is enabled and no public table policy is created
+4. **Notification** — Resend receives plain-text internal notification content only after storage succeeds
+5. **Transmission** — all production API communication uses HTTPS (enforced by Vercel)
+
+### Rate Limiting and CAPTCHA
+
+The in-process limiter is intentionally only a local safety net; it cannot provide global coordination across serverless instances. Before public launch, enable an edge control such as Vercel WAF rate limiting or Cloudflare and configure a shared rate-limit provider if application-level distributed limiting is needed. The form has a documented `TURNSTILE_SECRET_KEY` seam for Cloudflare Turnstile; enable it if automated abuse is observed or required by the deployment policy.
 
 ### No Payments in v1
 

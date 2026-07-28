@@ -52,13 +52,12 @@
 
 ### Milestone 5: Lead Capture MVP
 
-- [ ] Supabase project setup (PostgreSQL)
-- [ ] `leads` table migration (see docs/API.md)
-- [ ] Server Action for lead submission
-- [ ] Form validation (client + server)
-- [ ] Resend email notification on new lead
-- [ ] Analytics event tracking for form submissions
-- [ ] Success/error UX for form
+- [x] Supabase `leads` migration (apply it to the configured project before launch)
+- [x] Server Action for lead submission
+- [x] Form validation and accessible server-error UX
+- [x] Resend email notification adapter
+- [ ] Analytics event tracking for form submissions (typed seam exists; vendor intentionally deferred)
+- [x] Success/error UX for form
 
 ### Milestone 6: SEO & Polish
 

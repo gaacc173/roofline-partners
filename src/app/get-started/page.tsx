@@ -1,4 +1,5 @@
 import { PackageCard } from "@/components/marketing";
+import { LeadForm } from "@/components/forms/LeadForm";
 import { Container, SectionHeading } from "@/components/ui";
 import { getStartedContent } from "@/content/marketing";
 import { getPackageById, packages } from "@/content/packages";
@@ -50,22 +51,40 @@ export default async function GetStartedPage({ searchParams }: GetStartedPagePro
             ))}
           </div>
           <aside className="h-fit rounded-2xl bg-slate-950 p-7 text-white lg:sticky lg:top-24">
-            <h2 className="text-xl font-bold">{getStartedContent.nextStepTitle}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              {getStartedContent.nextStepDescription}
-            </p>
-            <a
-              href="/contact"
-              className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200"
-            >
-              {getStartedContent.contactCta}
-            </a>
-            <a
-              href="/packages"
-              className="mt-4 block text-sm font-semibold text-amber-200 underline underline-offset-4"
-            >
-              {getStartedContent.packageCta} →
-            </a>
+            {selectedPackage ? (
+              <>
+                <h2 className="text-xl font-bold">{getStartedContent.formTitle}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  {getStartedContent.formDescription}
+                </p>
+                <div className="mt-6 rounded-2xl bg-white p-5 text-slate-950">
+                  <LeadForm
+                    source={selectedPackage.id === "trial" ? "trial" : "package"}
+                    selectedPackage={selectedPackage.id}
+                    submitLabel={getStartedContent.submitLabel}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold">{getStartedContent.nextStepTitle}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  {getStartedContent.nextStepDescription}
+                </p>
+                <a
+                  href="/contact"
+                  className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200"
+                >
+                  {getStartedContent.contactCta}
+                </a>
+                <a
+                  href="/packages"
+                  className="mt-4 block text-sm font-semibold text-amber-200 underline underline-offset-4"
+                >
+                  {getStartedContent.packageCta} →
+                </a>
+              </>
+            )}
           </aside>
         </div>
       </Container>

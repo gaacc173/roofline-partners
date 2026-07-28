@@ -111,3 +111,15 @@
   - Adding a vendor in a future milestone requires only implementing the interface
   - No runtime overhead when analytics are disabled
   - Event names follow a consistent `entity_action` convention
+
+## ADR-013: Server Action Lead Pipeline with Provider Contracts
+
+- **Status**: Accepted
+- **Date**: 2026-07-28
+- **Context**: The MVP needs durable lead capture and internal notifications without coupling public forms to a database, email SDK, or future CRM.
+- **Decision**: Accept submissions through a same-origin Next.js Server Action. Parse them with Zod, then use `LeadSubmissionService` with `LeadRepository` and `LeadNotificationService` contracts. Supabase PostgREST and Resend REST are the initial adapters.
+- **Consequences**:
+  - Provider secrets remain server-only and no database SDK is sent to the browser
+  - The lead row is saved before the notification attempt; notification failure is logged without losing a lead
+  - Future CRM, queue/outbox, or provider changes replace adapters rather than public form logic
+  - Rate limiting requires an edge/shared-provider control before public production launch because the local guard is not globally distributed
