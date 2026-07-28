@@ -8,9 +8,9 @@
 
 export const site = {
   name: "Roofline Partners",
-  tagline: "Premium roofing solutions for residential and commercial properties.",
+  tagline: "Qualified roofing appointments, built for contractors ready to grow.",
   description:
-    "Roofline Partners delivers premium roofing solutions for residential and commercial properties. Trusted craftsmanship, lasting results.",
+    "Roofline Partners connects roofing companies with qualified appointment opportunities through a clear, responsive onboarding process.",
   email: "info@rooflinepartners.com",
   phone: "(555) 000-0000",
   address: "Service area: Greater metropolitan region",
@@ -23,6 +23,11 @@ export const site = {
     { label: "Contact", href: "/contact" },
   ] as const,
   getStartedHref: "/get-started",
+  metadata: {
+    defaultTitle: "Roofing appointments for teams ready to grow",
+    description:
+      "Compare flexible roofing appointment packages or request a qualifying two-appointment trial from Roofline Partners.",
+  },
   footer: {
     copyright: `© ${new Date().getFullYear()} Roofline Partners. All rights reserved.`,
     links: [

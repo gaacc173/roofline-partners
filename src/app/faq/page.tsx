@@ -3,8 +3,9 @@ import { faqs } from "@/content/faqs";
 import { FAQItem } from "./faq-item";
 
 export const metadata = {
-  title: "FAQ — Roofline Partners",
-  description: "Frequently asked questions about our roofing services, pricing, and process.",
+  title: "FAQ",
+  description:
+    "Frequently asked questions about Roofline Partners appointment packages and onboarding.",
 };
 
 export default function FAQPage() {

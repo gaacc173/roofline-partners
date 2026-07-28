@@ -8,8 +8,8 @@ This document covers the security posture, practices, and considerations for the
 
 - All sensitive values are stored in `.env.local` (never committed)
 - `.env.example` documents the schema without real values
-- `src/lib/env.ts` validates required variables at startup
-- Optional integration keys (Supabase, Resend) are validated only when present
+- `src/lib/env.ts` supplies safe local defaults for public site metadata
+- `validateProductionEnvironment()` prevents a release from using a localhost canonical URL; Supabase and Resend keys are validated when their integrations are enabled
 - No secrets are embedded in source code or client-side bundles
 
 ## Data Handling
@@ -37,8 +37,8 @@ This document covers the security posture, practices, and considerations for the
 ## Next.js Security Features
 
 - **CSP headers** — Managed by Vercel deployment; custom policies can be added via `next.config.ts`
-- **X-Frame-Options** — Set by Next.js/Vercel default
-- **CSRF protection** — Server Actions use built-in CSRF tokens
+- **X-Frame-Options** — will be set explicitly in the application security-header policy before the lead endpoint is released
+- **CSRF protection** — the lead endpoint will enforce same-origin checks and request verification; no mutation endpoint exists yet
 - **XSS prevention** — React escapes by default; `stripHtml()` adds server-side defense
 
 ## Supabase Security (Future)

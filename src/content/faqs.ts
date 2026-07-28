@@ -12,43 +12,43 @@ export interface FAQ {
 
 export const faqs: FAQ[] = [
   {
-    question: "How do I schedule a roof inspection?",
+    question: "What does Roofline Partners provide?",
     answer:
-      "You can schedule a free roof inspection by visiting our contact page or calling us directly. We typically confirm appointments within one business day.",
+      "Roofline Partners is an appointment-generation service for roofing companies. We help qualified teams request an appointment package and complete onboarding with our team.",
   },
   {
-    question: "What areas do you serve?",
+    question: "Who is the free trial for?",
     answer:
-      "We serve the greater metropolitan region and surrounding communities. Contact us to confirm service availability in your area.",
+      "The two-appointment trial is intended for qualifying roofing companies. We review service area, capacity, and basic company context before confirming availability.",
   },
   {
-    question: "Do you offer emergency repair services?",
+    question: "Are package prices final?",
     answer:
-      "Yes, we provide emergency repair services for storm damage and urgent leaks. Call our dedicated line for immediate assistance.",
+      "No. Any amount shown is an illustrative sample for planning. Final availability, package terms, and payment are confirmed by our team after qualification.",
   },
   {
-    question: "What types of roofing materials do you work with?",
+    question: "Is payment collected on this website?",
     answer:
-      "We work with asphalt shingles, metal roofing, tile, and flat roofing systems. Our team can help you choose the best material for your property.",
+      "No. Roofline Partners does not collect payment through this MVP website. A team member discusses final terms and payment after reviewing your request.",
   },
   {
-    question: "Are your roofers licensed and insured?",
+    question: "What information do you need from my company?",
     answer:
-      "Yes, all Roofline Partners technicians are fully licensed and insured. We carry comprehensive liability and workers' compensation coverage.",
+      "We ask for your contact details, company name, service area, preferred contact method, selected package, and any context that helps us review fit.",
   },
   {
-    question: "How long does a typical roof replacement take?",
+    question: "How will your team contact me?",
     answer:
-      "Most residential roof replacements are completed within 1–3 days depending on size and materials. We provide a detailed timeline during your consultation.",
+      "You can choose WhatsApp, Telegram, email, or SMS in the qualification form. We use that preference when following up where possible.",
   },
   {
-    question: "Do you provide warranties?",
+    question: "Can I request a package for more than one service area?",
     answer:
-      "Yes, all our work includes a workmanship warranty. Manufacturer warranties on materials vary by product and are provided at the time of installation.",
+      "Yes. Include the relevant areas in your request notes. Our team will discuss coverage and capacity during onboarding.",
   },
   {
-    question: "Can I get a free estimate?",
+    question: "What happens after I submit a request?",
     answer:
-      "Absolutely. We offer free estimates for all projects. Contact us to schedule your no-obligation consultation.",
+      "Your request is reviewed by the Roofline Partners team. We follow up to confirm fit, availability, and the next step before any paid fulfillment begins.",
   },
 ] as const;

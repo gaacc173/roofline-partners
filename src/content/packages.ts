@@ -1,19 +1,21 @@
 /**
  * Package configuration for Roofline Partners.
  *
- * Each package defines the appointment quantity, price placeholder,
+ * Each package defines the appointment quantity, sample price,
  * benefits, and whether it should be highlighted as the recommended option.
  *
- * Pricing uses safe USD placeholders — no real client pricing is hard-coded.
+ * Pricing is illustrative only. Final availability and pricing are confirmed
+ * by the Roofline team after a qualification request.
  */
 
 export interface Package {
   id: string;
   name: string;
-  /** Number of consultation appointments included */
+  /** Number of qualified appointments requested */
   appointmentQuantity: number;
-  /** Display price — placeholder for future real pricing */
+  /** Display sample price — never a final purchase price */
   price: string;
+  priceNote: string;
   /** Short description */
   description: string;
   /** Bullet-point benefits */
@@ -22,59 +24,74 @@ export interface Package {
   highlighted: boolean;
   /** CTA button text */
   cta: string;
-  /** Route slug for the package detail page */
-  slug: string;
 }
 
 export const packages: Package[] = [
   {
-    id: "inspection",
-    name: "Roof Inspection",
-    appointmentQuantity: 1,
-    price: "$0",
-    description: "Comprehensive roof assessment with detailed report and recommendations.",
-    benefits: [
-      "Professional visual inspection",
-      "Detailed condition report",
-      "Photo documentation",
-      "No-obligation recommendations",
-    ],
-    highlighted: false,
-    cta: "Book Free Inspection",
-    slug: "inspection",
-  },
-  {
-    id: "repair",
-    name: "Repair & Restore",
+    id: "trial",
+    name: "Trial",
     appointmentQuantity: 2,
-    price: "From $1,500",
-    description: "Targeted repairs and restoration to extend the life of your existing roof.",
+    price: "Complimentary",
+    priceNote: "Available to qualifying roofing companies; subject to service-area fit.",
+    description:
+      "Request two trial appointments to evaluate fit before considering a paid package.",
     benefits: [
-      "Free initial consultation",
-      "Secondary follow-up assessment",
-      "Quality materials included",
-      "Warranty on all workmanship",
+      "Two requested trial appointments",
+      "Service-area and company fit review",
+      "Personal onboarding follow-up",
+      "No payment collected through this site",
     ],
     highlighted: false,
-    cta: "Get a Repair Quote",
-    slug: "repair",
+    cta: "Request the trial",
   },
   {
-    id: "replacement",
-    name: "Full Replacement",
-    appointmentQuantity: 3,
-    price: "Custom quote",
-    description: "Complete roof replacement with premium materials and guaranteed installation.",
+    id: "starter-10",
+    name: "Starter",
+    appointmentQuantity: 10,
+    price: "$1,250",
+    priceNote: "Sample price; final package terms are confirmed after qualification.",
+    description: "A focused starting package for teams testing a new appointment channel.",
     benefits: [
-      "Initial design consultation",
-      "Material selection guidance",
-      "Project management included",
-      "Post-installation inspection",
-      "Extended warranty coverage",
+      "10 requested roofing appointments",
+      "Service-area alignment discussion",
+      "Preferred-contact capture",
+      "Manual onboarding before fulfillment",
+    ],
+    highlighted: false,
+    cta: "Request Starter",
+  },
+  {
+    id: "growth-20",
+    name: "Growth",
+    appointmentQuantity: 20,
+    price: "$2,300",
+    priceNote: "Sample price; final package terms are confirmed after qualification.",
+    description: "A balanced appointment volume for teams ready to build a steadier pipeline.",
+    benefits: [
+      "20 requested roofing appointments",
+      "Priority package review",
+      "Service-area and qualification alignment",
+      "Personal handoff to onboarding",
     ],
     highlighted: true,
-    cta: "Request a Free Estimate",
-    slug: "replacement",
+    cta: "Request Growth",
+  },
+  {
+    id: "scale-40",
+    name: "Scale",
+    appointmentQuantity: 40,
+    price: "$4,200",
+    priceNote: "Sample price; final package terms are confirmed after qualification.",
+    description:
+      "A higher-volume option for established teams with capacity for more conversations.",
+    benefits: [
+      "40 requested roofing appointments",
+      "Capacity and coverage discussion",
+      "Preferred-contact capture",
+      "Manual onboarding before fulfillment",
+    ],
+    highlighted: false,
+    cta: "Request Scale",
   },
 ] as const;
 

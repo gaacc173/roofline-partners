@@ -1,9 +1,9 @@
 /**
  * Typed environment variable validation with safe defaults.
  *
- * In production these values are validated at startup.
- * During development, optional integrations (Supabase, Resend, analytics)
- * may be left unset — the app still runs.
+ * Public site values resolve safely in every environment. Deployment
+ * configuration is checked by `validateProductionEnvironment()` before a
+ * production release; optional integrations are validated when enabled.
  *
  * Public-facing variables always resolve to a non-empty string so the
  * application never crashes locally when deployment integrations are absent.
@@ -48,4 +48,17 @@ export function validateEnv(): EnvSchema {
     vars.NEXT_PUBLIC_ANALYTICS_ENABLED = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED;
 
   return vars;
+}
+
+/**
+ * Guards against accidentally deploying canonical metadata that points at the
+ * local development URL. This deliberately runs in release checks rather than
+ * at module load so a contributor can run the marketing shell without secrets.
+ */
+export function validateProductionEnvironment(env = validateEnv()): void {
+  if (process.env.NODE_ENV === "production" && env.NEXT_PUBLIC_APP_URL.includes("localhost")) {
+    throw new Error(
+      "NEXT_PUBLIC_APP_URL must be set to the public site URL before production deployment.",
+    );
+  }
 }

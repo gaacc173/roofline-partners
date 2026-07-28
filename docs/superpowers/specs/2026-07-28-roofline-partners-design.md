@@ -157,7 +157,7 @@ Implementation: Lightweight analytics event logger → future integration with a
 
 Brand assets should be placed in:
 
-- `public/favicon.svg` — Favicon
+- `src/app/icon.svg` — App Router favicon
 - `public/logo.svg` — Primary logo
 - `public/og-image.png` — Open Graph image (1200x630)
 - `public/` — Other static assets

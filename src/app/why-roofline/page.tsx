@@ -1,51 +1,19 @@
 import { Container, SectionHeading } from "@/components/ui";
 import { trustSignals } from "@/content/trust";
+import { whyRooflineContent } from "@/content/marketing";
 
 export const metadata = {
-  title: "Why Roofline — Roofline Partners",
-  description:
-    "Discover why property owners choose Roofline Partners for premium roofing solutions.",
+  title: whyRooflineContent.metadata.title,
+  description: whyRooflineContent.metadata.description,
 };
-
-const reasons = [
-  {
-    title: "Premium Materials",
-    description:
-      "We source only industry-leading materials from trusted manufacturers, backed by extended warranties.",
-  },
-  {
-    title: "Certified Craftsmen",
-    description:
-      "Every technician on our team is certified, insured, and trained in the latest roofing techniques.",
-  },
-  {
-    title: "Transparent Pricing",
-    description: "No hidden fees, no surprises. You get a detailed quote before any work begins.",
-  },
-  {
-    title: "Warranty Protection",
-    description:
-      "Comprehensive workmanship warranties on all projects, plus manufacturer coverage on materials.",
-  },
-  {
-    title: "Local Expertise",
-    description:
-      "Deep knowledge of local building codes, weather patterns, and material performance.",
-  },
-  {
-    title: "Dedicated Support",
-    description:
-      "A single point of contact from your first call through project completion and beyond.",
-  },
-];
 
 export default function WhyRooflinePage() {
   return (
     <Container size="xl">
       <SectionHeading
-        tag="Why Choose Us"
-        title="Why Roofline Partners?"
-        subtitle="We combine craftsmanship, transparency, and dedication to deliver roofs that last."
+        tag={whyRooflineContent.eyebrow}
+        title={whyRooflineContent.title}
+        subtitle={whyRooflineContent.description}
         align="center"
       />
 
@@ -67,7 +35,7 @@ export default function WhyRooflinePage() {
 
       {/* Reasons grid */}
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {reasons.map((reason) => (
+        {whyRooflineContent.reasons.map((reason) => (
           <div key={reason.title}>
             <h3 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
               {reason.title}

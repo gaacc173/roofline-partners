@@ -1,8 +1,8 @@
 /**
  * Trust signals configuration.
  *
- * These are proof-placeholder values — clearly not real client
- * testimonials. Replace with verified data before going live.
+ * No numerical claims or testimonials are published until the business has
+ * verified, consented proof to support them.
  */
 
 export interface TrustSignal {
@@ -21,24 +21,19 @@ export interface Testimonial {
 
 export const trustSignals: TrustSignal[] = [
   {
-    label: "Years in Business",
-    value: "10+",
-    description: "Serving the community with premium roofing solutions",
+    label: "Clear package options",
+    value: "4",
+    description: "A trial plus three appointment-volume options to compare",
   },
   {
-    label: "Projects Completed",
-    value: "500+",
-    description: "Residential and commercial roofing projects",
+    label: "Contact preferences",
+    value: "4",
+    description: "WhatsApp, Telegram, email, or SMS can be requested",
   },
   {
-    label: "Customer Satisfaction",
-    value: "4.9 / 5",
-    description: "Based on verified client feedback",
-  },
-  {
-    label: "Warranty Coverage",
-    value: "Up to 25 yrs",
-    description: "On select materials and workmanship",
+    label: "Payment collected online",
+    value: "0",
+    description: "Final terms and payment are handled after a team review",
   },
 ] as const;
 
@@ -48,26 +43,4 @@ export const trustSignals: TrustSignal[] = [
  * These are NOT real client reviews. They are placeholders to demonstrate
  * layout. Replace with verified testimonials before launch.
  */
-export const testimonials: Testimonial[] = [
-  {
-    name: "[Client Name]",
-    location: "[City, State]",
-    quote:
-      '"Proof placeholder — replace with a verified client testimonial before launch. This space is reserved for real, consented client feedback."',
-    verified: false,
-  },
-  {
-    name: "[Client Name]",
-    location: "[City, State]",
-    quote:
-      '"Proof placeholder — replace with a verified client testimonial before launch. This space is reserved for real, consented client feedback."',
-    verified: false,
-  },
-  {
-    name: "[Client Name]",
-    location: "[City, State]",
-    quote:
-      '"Proof placeholder — replace with a verified client testimonial before launch. This space is reserved for real, consented client feedback."',
-    verified: false,
-  },
-] as const;
+export const testimonials: Testimonial[] = [];

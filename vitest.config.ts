@@ -1,10 +1,16 @@
 import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   test: {
     globals: false,
-    // Node environment for pure utility tests (cn, lead-utils)
-    environment: "node",
-    include: ["src/**/*.test.ts"],
+    environment: "jsdom",
+    include: ["src/**/*.test.{ts,tsx}"],
+    setupFiles: ["./src/test/setup.ts"],
   },
 });

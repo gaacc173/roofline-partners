@@ -42,10 +42,10 @@ User → Browser → Next.js App Router → Server Components
                                     → Supabase (future)
 ```
 
-### Current State (Foundation)
+### Current State (Shared Marketing Shell)
 
-- **Static home page** — rendered at build time via Next.js App Router
-- **Environment validation** — runs at module load; throws on missing required vars
+- **Static public routes** — a shared layout and configuration-driven route shells render through Next.js App Router
+- **Environment resolution** — public site values have safe local defaults; `validateProductionEnvironment()` is reserved for release/deployment validation so contributors can run the shell without secrets
 - **Lead utilities** — pure functions for sanitising and validating lead data (ready for future server actions/API routes)
 
 ### Planned State (MVP)
@@ -74,7 +74,7 @@ Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
 
 ## Security Model
 
-- Environment variables validated at startup via `src/lib/env.ts`
+- Public environment values resolved through `src/lib/env.ts`; production URL validation is run as part of deployment hardening
 - Lead data sanitised via `stripHtml()` before storage
 - No client-side secrets; all sensitive operations server-side
 - CSP headers managed by Vercel deployment config (future)

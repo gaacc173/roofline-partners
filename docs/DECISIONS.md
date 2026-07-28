@@ -36,13 +36,13 @@
 - **Decision**: Use Vitest with `node` environment for unit tests.
 - **Consequences**: Tests live alongside source files (`*.test.ts`); pure utilities in `src/lib/` are easily testable.
 
-## ADR-005: Playwright for E2E Testing
+## ADR-005: Playwright for Future E2E Testing
 
 - **Status**: Accepted
 - **Date**: 2026-07-28
 - **Context**: End-to-end testing is needed once the application has interactive features.
-- **Decision**: Install Playwright with Chromium browser for future E2E tests.
-- **Consequences**: Browser binary downloaded; test config ready but no tests written yet.
+- **Decision**: Keep Playwright available for the lead-flow milestone. Browser tests are not claimed until a configuration and test suite exist.
+- **Consequences**: No E2E checks currently run; interactive component behavior is covered with Vitest and Testing Library where required.
 
 ## ADR-006: Deferred Supabase / Resend Integration
 
@@ -52,7 +52,7 @@
 - **Decision**: Implement typed environment validation and lead utilities now; wire Supabase and Resend in the MVP phase.
 - **Consequences**:
   - `.env.example` documents the schema for future variables
-  - `src/lib/env.ts` validates required vars at startup
+  - `src/lib/env.ts` resolves public local defaults; deployment validation is explicit so contributors can run the shell without integration credentials
   - `src/lib/lead-utils.ts` is ready for use in server actions/API routes
   - No database or email dependencies in the foundation
 

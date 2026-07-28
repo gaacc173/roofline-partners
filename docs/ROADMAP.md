@@ -6,7 +6,7 @@
 
 - [x] Next.js 16 App Router scaffold
 - [x] TypeScript, Tailwind CSS v4, ESLint, Prettier
-- [x] Vitest + Playwright installed
+- [x] Vitest installed; Playwright retained for a future E2E suite
 - [x] Branded home page
 - [x] Environment validation
 - [x] Lead data utilities with TDD
@@ -38,18 +38,19 @@
 - [x] Analytics interface with named events
 - [x] Self-authored logo SVG and favicon strategy
 - [x] Updated documentation
+- [x] Review-driven hardening: tablet navigation, rendered header test, content boundary, and truthful sample pricing
 
-### Milestone 4: Marketing Content Pages
+### Milestone 4: Marketing Content Completion
 
-- [ ] Services page (/services)
-- [ ] Packages/pricing page (/packages)
-- [ ] About page (/about)
-- [ ] Testimonials section
+- [x] Packages/pricing page (/packages)
+- [x] How it works, why Roofline, FAQ, and contact route shells
+- [x] Content/configuration modules for public copy and packages
+- [ ] Complete premium homepage and shared conversion sections
 - [ ] Contact page with lead form (/contact)
-- [ ] Content/configuration module for packages & testimonials
+- [ ] Verified testimonial/social-proof section once approved evidence is supplied
 - [ ] JSON-LD: Organization + Service schemas
 
-### Milestone 4: Lead Capture MVP
+### Milestone 5: Lead Capture MVP
 
 - [ ] Supabase project setup (PostgreSQL)
 - [ ] `leads` table migration (see docs/API.md)
@@ -59,7 +60,7 @@
 - [ ] Analytics event tracking for form submissions
 - [ ] Success/error UX for form
 
-### Milestone 5: SEO & Polish
+### Milestone 6: SEO & Polish
 
 - [ ] Favicon (generated SVG-based)
 - [ ] OG images (generated via @vercel/og or static)
@@ -71,7 +72,7 @@
 - [ ] Performance audit (Lighthouse)
 - [ ] Accessibility audit (axe)
 
-### Milestone 6: Deployment & CI/CD
+### Milestone 7: Deployment & CI/CD
 
 - [ ] Vercel deployment configuration
 - [ ] Production environment variables

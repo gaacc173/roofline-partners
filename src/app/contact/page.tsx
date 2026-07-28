@@ -1,34 +1,35 @@
 import { Container, SectionHeading } from "@/components/ui";
+import { contactContent } from "@/content/marketing";
+import { site } from "@/content/site";
 
 export const metadata = {
-  title: "Contact — Roofline Partners",
-  description:
-    "Get in touch with Roofline Partners. Request a free consultation or ask us anything.",
+  title: contactContent.metadata.title,
+  description: contactContent.metadata.description,
 };
 
 export default function ContactPage() {
   return (
     <Container size="md">
       <SectionHeading
-        tag="Contact Us"
-        title="Get in Touch"
-        subtitle="We'd love to hear from you. Reach out for a free consultation or any questions."
+        tag={contactContent.eyebrow}
+        title={contactContent.title}
+        subtitle={contactContent.description}
         align="center"
       />
       <div className="mx-auto max-w-md space-y-6 rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
         <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
-          Contact form coming in the next milestone. For now, reach us at{" "}
-          <a
-            href="mailto:info@rooflinepartners.com"
-            className="text-zinc-900 underline dark:text-zinc-50"
-          >
-            info@rooflinepartners.com
+          {contactContent.interimMessage}{" "}
+          <a href={`mailto:${site.email}`} className="text-zinc-900 underline dark:text-zinc-50">
+            {site.email}
           </a>
         </p>
         <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
-          Or call:{" "}
-          <a href="tel:5550000000" className="text-zinc-900 dark:text-zinc-50">
-            (555) 000-0000
+          {contactContent.phoneLabel}:{" "}
+          <a
+            href={`tel:${site.phone.replace(/\D/g, "")}`}
+            className="text-zinc-900 dark:text-zinc-50"
+          >
+            {site.phone}
           </a>
         </p>
       </div>
