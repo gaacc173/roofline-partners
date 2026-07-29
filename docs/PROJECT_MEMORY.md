@@ -18,6 +18,7 @@
 - All tooling scripts configured (dev, build, start, lint, test, typecheck, format)
 - Playwright is configured with browser smoke tests for package selection, SEO routes, and the health endpoint
 - `docs/OPERATIONS.md` is the production launch, smoke-test, monitoring, and rollback runbook
+- Lead pipeline tests now cover Server Action security gates, provider HTTP contracts, store-first notification behavior, schema abuse controls, and stored-lead mapping
 
 ## Commit 2: Architecture Documentation
 

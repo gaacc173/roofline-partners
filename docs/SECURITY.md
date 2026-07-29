@@ -51,6 +51,7 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 - **Browser protections** — `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, strict referrer policy, a restrictive permissions policy, and production HSTS are set through `next.config.ts`
 - **CSRF protection** — the Server Action verifies same-origin `Origin`/`Host` before mutating data
 - **XSS prevention** — React escapes rendered text; the server schema also strips markup from stored free text
+- **Lead boundary tests** — Server Action rejection paths and Supabase/Resend adapter contracts are covered by focused tests before provider credentials are used
 
 ## Operational Checks
 

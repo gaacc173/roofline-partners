@@ -15,6 +15,8 @@ Visitor form
   → /thank-you redirect
 ```
 
+The Server Action rejects missing/mismatched origins, unsupported sources, rate-limited requests, honeypot values, missing consent, invalid package/source combinations, malformed fields, and requests submitted in less than two seconds or more than 24 hours after the form was started. These checks are covered by focused unit tests in `src/app/actions/submit-lead.test.ts`.
+
 The database insert is authoritative. Notification delivery is attempted afterwards; a temporary notification failure is logged but does not discard a saved lead.
 
 For the manual provider-backed smoke test, submit one clearly labeled internal request from `/get-started?package=trial` or `/contact`, then confirm the matching Supabase row and Resend notification. The automated Playwright suite does not submit real leads.

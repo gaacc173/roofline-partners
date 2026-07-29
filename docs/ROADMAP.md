@@ -56,6 +56,7 @@
 - [x] Server Action for lead submission
 - [x] Form validation and accessible server-error UX
 - [x] Resend email notification adapter
+- [x] Server Action and provider contract test coverage
 - [ ] Analytics event tracking for form submissions (typed seam exists; vendor intentionally deferred)
 - [x] Success/error UX for form
 
