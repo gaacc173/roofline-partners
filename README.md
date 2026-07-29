@@ -51,6 +51,7 @@ Copy `.env.example` to `.env.local` and fill in values as integrations are added
 - [Roadmap](./docs/ROADMAP.md) — milestones and timeline
 - [Security](./docs/SECURITY.md) — security posture and practices
 - [Setup](./docs/SETUP.md) — local development guide
+- [Operations](./docs/OPERATIONS.md) — launch, monitoring, smoke testing, and rollback runbook
 - [API](./docs/API.md) — API routes and server actions
 
 ## Deployment

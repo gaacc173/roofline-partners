@@ -136,14 +136,13 @@ PORT=3001 npm run dev
 
 ## Production Deployment (Vercel)
 
-1. Create a Supabase project and run `supabase/migrations/202607280001_create_leads.sql` in its SQL editor or migration workflow.
-2. In Resend, verify the sender domain used by `RESEND_FROM_EMAIL`.
-3. Import the repository into Vercel and configure the production environment variables from `.env.example`:
-   - `NEXT_PUBLIC_APP_URL` must be the final HTTPS production URL.
-   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `LEAD_NOTIFICATION_EMAIL` are required before accepting submissions.
-4. Enable Vercel Firewall rate limiting or place Cloudflare in front of the site before exposing the lead form. The in-process limiter is not a distributed production control.
-5. Deploy a preview, submit a controlled test request, confirm a row is stored and the internal email arrives, then deploy production.
-6. Confirm `https://your-domain.example/api/health` returns `{ "status": "ok" }` and configure uptime monitoring against that URL.
-7. Configure the canonical production URL in search-console tooling and submit `/sitemap.xml` after the site is publicly accessible.
+Follow the complete [Production Operations Runbook](./OPERATIONS.md). At a high level:
+
+1. Create a Supabase project, apply `supabase/migrations/202607280001_create_leads.sql`, and verify RLS/no public policies.
+2. Verify the Resend sender domain and required SPF/DKIM records.
+3. Add the custom domain to Vercel and set environment variables separately for Preview and Production.
+4. Enable distributed edge rate limiting before exposing the lead form.
+5. Deploy Preview, perform the controlled lead smoke test, then deploy Production and repeat it.
+6. Monitor `GET /api/health`, then run deployed Lighthouse/axe and search-console checks.
 
 Never place `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, or Turnstile secrets in a `NEXT_PUBLIC_` variable.

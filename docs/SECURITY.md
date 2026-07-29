@@ -9,7 +9,7 @@ This document covers the security posture, practices, and considerations for the
 - All sensitive values are stored in `.env.local` (never committed)
 - `.env.example` documents the schema without real values
 - `src/lib/env.ts` supplies safe local defaults for public site metadata
-- `validateProductionEnvironment()` prevents a release from using a localhost canonical URL; Supabase and Resend keys are validated when their integrations are enabled
+- `validateProductionEnvironment()` only prevents a production canonical URL from using `localhost`; it is a release helper and does not validate provider connectivity. Supabase and Resend configuration is checked when a lead is submitted.
 - No secrets are embedded in source code or client-side bundles
 
 ## Data Handling
@@ -24,7 +24,7 @@ This document covers the security posture, practices, and considerations for the
 
 ### Rate Limiting and CAPTCHA
 
-The in-process limiter is intentionally only a local safety net; it cannot provide global coordination across serverless instances. Before public launch, enable an edge control such as Vercel WAF rate limiting or Cloudflare and configure a shared rate-limit provider if application-level distributed limiting is needed. The form has a documented `TURNSTILE_SECRET_KEY` seam for Cloudflare Turnstile; enable it if automated abuse is observed or required by the deployment policy.
+The in-process limiter allows five submissions per 15-minute window per derived client identifier and is intentionally only a local safety net; it cannot provide global coordination across serverless instances. Before public launch, enable an edge control such as Vercel WAF rate limiting or Cloudflare. The `TURNSTILE_SECRET_KEY` field is a server-side seam only; Turnstile is not currently enforced by `submitLead` because no client widget/site key is configured.
 
 ### No Payments in v1
 
@@ -61,7 +61,7 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 
 - Row Level Security (RLS) policies on `leads` table
 - Service role key stored server-side only (never client-exposed)
-- Anon key scoped to allowed operations only
+- The application does not use a Supabase anon key; it writes through the server-only service-role key, which bypasses RLS. RLS remains enabled to prevent public table access and to protect future non-service-role clients.
 - Database migrations run through Supabase CLI or manual SQL
 
 ## Resend Security
@@ -98,3 +98,5 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 2. Update affected environment variables
 3. Redeploy to invalidate cached secrets
 4. Document the incident and update this document
+
+See [docs/OPERATIONS.md](./OPERATIONS.md) for deployment rollback and credential-rotation procedures.

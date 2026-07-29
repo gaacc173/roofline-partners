@@ -48,7 +48,7 @@
 - [x] Complete premium homepage and shared conversion sections
 - [x] Contact page with lead form (/contact)
 - [ ] Verified testimonial/social-proof section once approved evidence is supplied
-- [ ] JSON-LD: Organization + Service schemas
+- [x] JSON-LD: Organization + Service schemas
 
 ### Milestone 5: Lead Capture MVP
 
@@ -75,7 +75,7 @@
 - [ ] Production environment variables
 - [x] CI pipeline (format, lint, typecheck, unit/browser tests, build on PR)
 - [x] Health check endpoint (`/api/health`)
-- [ ] Rollback procedures documented
+- [x] Rollback procedures documented in `docs/OPERATIONS.md`
 - [ ] Admin capability seam (no full dashboard)
 - [ ] Monitoring & error tracking setup
 
@@ -91,4 +91,4 @@
 | 6. SEO & Polish            | 2026-07-28 | ✅ Done*  |
 | 7. Deployment & CI/CD      | 2026-07-29 | ✅ Ready* |
 
-`*` Code and documentation are ready; final external launch prerequisites remain environment and provider configuration, distributed rate limiting, and deployed Lighthouse/axe checks.
+`*` Repository code, CI, launch documentation, and rollback procedures are ready. External launch prerequisites remain production provider configuration, distributed rate limiting, deployed Lighthouse/axe checks, monitoring/error tracking, and approved business proof/content.

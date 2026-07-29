@@ -17,6 +17,7 @@
 - TDD cycle demonstrated: failing test → implementation → passing test
 - All tooling scripts configured (dev, build, start, lint, test, typecheck, format)
 - Playwright is configured with browser smoke tests for package selection, SEO routes, and the health endpoint
+- `docs/OPERATIONS.md` is the production launch, smoke-test, monitoring, and rollback runbook
 
 ## Commit 2: Architecture Documentation
 
@@ -67,6 +68,7 @@
 - The lead action confirms that `trial` and paid-package sources cannot be swapped by a manipulated form field
 - GitHub Actions now verifies formatting, linting, tests, type checking, and production build on `main` pushes and pull requests
 - npm overrides pin patched `postcss` and `sharp` versions for the tested Next.js release; `npm audit --omit=dev` is clean. Revisit the overrides when Next.js ships equivalent direct dependency versions
+- The repository does not contain production credentials, distributed rate limiting, APM, analytics vendor integration, or deployed Lighthouse/axe results; these remain external launch tasks
 
 ## Brand
 
@@ -103,6 +105,7 @@
 | `src/lib/lead-utils.test.ts`  | TDD test for sanitiseLead                                      |
 | `src/app/api/health/route.ts` | Cache-disabled deployment liveness endpoint                    |
 | `tests/marketing.spec.ts`     | Playwright smoke coverage for public conversion paths          |
+| `docs/OPERATIONS.md`          | Production launch and rollback runbook                         |
 | `.env.example`                | Documented env var schema                                      |
 | `docs/`                       | Architecture documentation                                     |
 
