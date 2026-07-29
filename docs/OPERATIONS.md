@@ -1,6 +1,6 @@
 # Production Operations Runbook
 
-This runbook is the operational source of truth for deploying and maintaining Roofline Partners. The application is deployed through Vercel, stores leads in Supabase, and sends internal notifications through Resend.
+This runbook is the operational source of truth for deploying and maintaining Roofline Partners. The application is deployed through Vercel and stores leads in a Google Sheet through the Google Apps Script Web App in `google-apps-script/Code.gs`.
 
 ## What CI Does
 
@@ -15,41 +15,40 @@ This runbook is the operational source of truth for deploying and maintaining Ro
 7. Production build
 8. Playwright Chromium browser smoke tests
 
-Vercel deployment is managed separately through the repository/Vercel Git integration. A green CI run is required for code confidence, but it does not prove that production provider credentials or database configuration are correct.
+Vercel deployment is managed separately through the repository/Vercel Git integration. A green CI run is required for code confidence, but it does not prove that production provider configuration is correct.
 
 ## Vercel Environment Scopes
 
-Configure environment variables separately for **Preview** and **Production** in Vercel. Do not point Preview at production Supabase or Resend resources unless shared data and notification risk is explicitly accepted. Prefer a separate Supabase project and Resend test sender for Preview.
+Configure environment variables separately for **Preview** and **Production** in Vercel. Do not point Preview at the production Google Sheet unless shared data and test-row risk is explicitly accepted. Prefer a separate Sheet and Apps Script deployment for Preview.
 
 Required for real lead submissions:
 
 - `NEXT_PUBLIC_APP_URL` — final HTTPS origin for the relevant Vercel environment
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `RESEND_API_KEY`
-- `RESEND_FROM_EMAIL`
-- `LEAD_NOTIFICATION_EMAIL`
+- `GOOGLE_SHEETS_WEBHOOK_URL` — deployed Apps Script Web App URL for the relevant Sheet
 
-Never expose service-role, Resend, or Turnstile secrets through `NEXT_PUBLIC_` variables.
+Never expose `GOOGLE_SHEETS_WEBHOOK_URL` or Turnstile secrets through `NEXT_PUBLIC_` variables.
 
 ## Initial Production Launch Checklist
 
 - [ ] Confirm the final business name, email, phone, service area, package quantities, and sample pricing in `src/content/`.
 - [ ] Add the final production domain to Vercel and confirm HTTPS is active.
 - [ ] Set `NEXT_PUBLIC_APP_URL` to the exact final HTTPS origin, without a trailing path.
-- [ ] Create the production Supabase project.
-- [ ] Apply `supabase/migrations/202607280001_create_leads.sql`.
-- [ ] Verify the `leads` table exists, RLS is enabled, and no public table policy permits anonymous access.
-- [ ] Verify the Resend sender domain, including the provider-requested SPF/DKIM DNS records.
-- [ ] Configure the production Supabase and Resend environment variables in Vercel.
-- [ ] Enable edge rate limiting for the lead submission surface through Vercel Firewall, Cloudflare, or an equivalent distributed control.
-- [ ] Deploy a Preview and complete the controlled smoke test below.
-- [ ] Deploy Production and repeat the controlled smoke test with a real internal test address.
+- [ ] Create the production Google Sheet with the header row documented in `google-apps-script/Code.gs`.
+- [ ] Deploy `google-apps-script/Code.gs` as a Web App executing as the Sheet owner with access set to anyone with the link.
+- [ ] Configure `GOOGLE_SHEETS_WEBHOOK_URL` separately for Preview and Production in Vercel.
+- [ ] Configure `NEXT_PUBLIC_ANALYTICS_ENABLED` for each environment (leave `false` unless analytics are enabled).
+- [ ] Configure `TURNSTILE_SECRET_KEY` in the relevant Vercel environment if Turnstile is in use.
+- [ ] **Edge rate limiting (deferred):** the in-memory limiter in the lead action is accepted as sufficient for current single-client traffic. Distributed edge rate limiting through Vercel Firewall, Cloudflare, or an equivalent provider is deferred until multi-client or higher-traffic deployment.
+- [ ] **Preview deploy:** push to the Vercel Preview branch and confirm the Preview URL loads without errors.
+- [ ] **Preview smoke test:** submit a controlled lead from `/get-started?package=trial` or `/contact`, confirm redirect to `/thank-you`, and verify exactly one new row appears in the Preview Google Sheet with expected source/package and normalized email.
+- [ ] **Production deploy:** push to the Vercel Production branch and confirm the live URL loads without errors.
+- [ ] **Production smoke test:** repeat the controlled lead smoke test with a real internal test address and confirm the Sheet row.
 - [ ] Configure uptime monitoring for `GET /api/health`.
 - [ ] Submit `/sitemap.xml` to search-console tooling after the final domain is indexed.
-- [ ] Run Lighthouse and axe against the deployed URL and record any accepted exceptions.
+- [ ] **Lighthouse:** run a Lighthouse audit against the deployed URL and record any accepted exceptions.
+- [ ] **axe:** run an axe accessibility audit against the deployed URL and record any accepted exceptions.
 
-The application-level limiter allows five submissions per 15-minute window per derived client identifier, but it is process-local and not multi-instance safe. It is not a substitute for the edge control.
+The application-level limiter allows five submissions per 15-minute window per derived client identifier, but it is process-local and not multi-instance safe. It is accepted as sufficient for current single-client traffic; it is not a substitute for edge-level controls in a multi-instance or multi-client deployment.
 
 ## Controlled Lead Smoke Test
 
@@ -58,12 +57,11 @@ The Playwright suite deliberately does **not** submit a real lead. Provider-back
 1. Open `/get-started?package=trial` or `/contact`.
 2. Submit a controlled request using an approved internal test address and clearly identifiable test notes.
 3. Confirm the request completes at `/thank-you`.
-4. Confirm exactly one new row appears in Supabase with the expected source/package and normalized email.
-5. Confirm the internal Resend notification arrives at `LEAD_NOTIFICATION_EMAIL`.
-6. Remove or label the test row according to the team’s data-retention procedure.
-7. Confirm `GET /api/health` returns HTTP 200 and `{ "status": "ok" }`.
+4. Confirm exactly one new row appears in the configured Google Sheet with the expected source/package and normalized email.
+5. Remove or label the test row according to the team’s data-retention procedure.
+6. Confirm `GET /api/health` returns HTTP 200 and `{ "status": "ok" }`.
 
-The health endpoint is a liveness check only. A green response does not prove Supabase or Resend connectivity.
+The health endpoint is a liveness check only. A green response does not prove Google Sheets or Apps Script connectivity.
 
 ## Monitoring and Signals
 
@@ -77,10 +75,10 @@ Suggested starting interval: five minutes, alert after two consecutive failures.
 
 Current application signals are intentionally minimal:
 
-- Lead storage or notification failures are logged with `console.error` server-side.
+- Lead storage failures from the Apps Script Web App are logged with `console.error` server-side.
 - Users receive a generic submission error and no provider details.
 - No APM, error-tracking vendor, log sink, or alert routing is configured in the repository yet.
-- Review Supabase insert/error activity and Resend delivery/bounce activity after launch.
+- Review the Google Sheet for expected lead rows and Apps Script execution logs for webhook errors after launch.
 
 ## Rollback
 
@@ -93,32 +91,32 @@ After promotion:
 1. Confirm production environment variables were not unintentionally changed.
 2. Check `/api/health`.
 3. Run one controlled lead smoke test only if the rollback affects the lead pipeline.
-4. Confirm the Supabase row and Resend notification.
+4. Confirm the Google Sheet row.
 5. Record the incident, deployment IDs, symptoms, and rollback time.
 
 ### Code correction rollback
 
 For a code change that must be permanently corrected, revert the offending commit on `main`, allow CI to pass, and deploy the resulting known-good commit through Vercel. Do not rewrite shared history or force-push.
 
-### Database caution
+### Sheet caution
 
-Do not roll back a database migration by deleting tables or columns during an application rollback. First determine whether the previous application version can safely read the current schema. Use an additive forward migration for incompatible schema changes and take a Supabase backup before destructive maintenance.
+Do not delete or rearrange the configured Sheet columns during an application rollback. Keep the header order documented in `google-apps-script/Code.gs`, and label or remove test rows according to the team’s data-retention procedure.
 
 ## Incident Response
 
-If a credential is exposed:
+If a credential or webhook URL is exposed:
 
-1. Revoke or rotate the credential in Supabase, Resend, Vercel, or the affected provider.
+1. Revoke or rotate the affected Apps Script Web App deployment or credential in Vercel.
 2. Update the correct Vercel environment scope.
 3. Redeploy or promote a known-good deployment so the new configuration is active.
-4. Check `/api/health` and provider activity.
+4. Check `/api/health`, Apps Script execution logs, and the Sheet for unexpected rows.
 5. Document the incident and update `docs/SECURITY.md` if the threat model changed.
 
 ## Repository-Current Limitations
 
 The following require external production access and cannot be completed solely in this repository:
 
-- Real production environment variables and provider projects
+- Real production environment variables, Google Sheet, and Apps Script deployment
 - Distributed edge rate limiting
 - Deployed Lighthouse and axe audits
 - APM/error-tracking integration

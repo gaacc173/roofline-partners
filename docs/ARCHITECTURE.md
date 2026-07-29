@@ -15,8 +15,7 @@ Roofline Partners is a premium roofing company website built with **Next.js App 
 | Linting           | ESLint 9 (ESLint CLI, no `next lint`)           |
 | Formatting        | Prettier 3                                      |
 | Target Deployment | Vercel                                          |
-| Database          | Supabase PostgreSQL                             |
-| Email             | Resend                                          |
+| Lead storage      | Google Sheets via Apps Script Web App           |
 
 ## Directory Structure
 
@@ -44,8 +43,9 @@ public/           # Static assets
 ```
 User → Browser → Next.js App Router → Server Components
                                     → Server Action (lead submission)
-                                    → Supabase PostgreSQL
-                                    → Resend notification
+                                    → GoogleSheetsLeadRepository
+                                    → Google Apps Script Web App (Code.gs)
+                                    → Google Sheet row
 ```
 
 ### Current State (Shared Marketing Shell)
@@ -53,20 +53,21 @@ User → Browser → Next.js App Router → Server Components
 - **Marketing experience** — homepage, packages, process, differentiation, FAQ, contact, and a query-aware package selection route render through a shared config-driven design system
 - **Environment resolution** — public site values have safe local defaults; `validateProductionEnvironment()` is reserved for release/deployment validation so contributors can run the shell without secrets
 - **Lead utilities** — pure functions for sanitising and validating lead data used by the server action
-- **Lead pipeline** — qualification and contact forms submit through a same-origin Server Action, persist through a `LeadRepository`, and notify through a `LeadNotificationService`
+- **Lead pipeline** — qualification and contact forms submit through a same-origin Server Action and persist through `GoogleSheetsLeadRepository`, which posts to the Google Apps Script Web App defined in `google-apps-script/Code.gs`
 
 ### Operational Verification
 
 - `GET /api/health` provides a minimal liveness signal for Vercel checks and external uptime monitors.
 - Playwright smoke tests cover package-to-qualification navigation, the selected package contract, public SEO routes, and the health endpoint.
-- The health endpoint intentionally does not perform provider calls, so monitoring cannot create leads or incur notification/database traffic.
+- The health endpoint intentionally does not perform provider calls, so monitoring cannot create leads or incur webhook traffic.
 
 ### Lead Pipeline (MVP)
 
 ```
 Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
-                    → Supabase INSERT into leads table
-                    → Resend email notification
+                    → GoogleSheetsLeadRepository
+                    → GOOGLE_SHEETS_WEBHOOK_URL POST
+                    → google-apps-script/Code.gs appends row
                     → Analytics event
 ```
 
@@ -75,7 +76,7 @@ Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
 1. **App Router only** — no Pages Router; all routes under `src/app/`
 2. **Server Components by default** — client components only where interactivity is needed
 3. **Pure utility layer** — `src/lib/` contains framework-agnostic helpers
-4. **Provider contracts** — Supabase and Resend are server-only adapters behind lead service interfaces
+4. **Provider contract** — `GoogleSheetsLeadRepository` is a server-only adapter behind the `LeadRepository` interface; the Sheet is the lead destination and no separate notification provider is used
 5. **No payments in v1** — manual fulfillment workflow only
 
 ## SEO Configuration

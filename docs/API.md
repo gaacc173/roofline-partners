@@ -10,16 +10,17 @@ Visitor form
   → Server Action same-origin verification
   → honeypot, timing, process-local rate-limit guard
   → Zod validation and normalization
-  → Supabase `leads` insert through LeadRepository
-  → Resend internal notification through LeadNotificationService
+  → GoogleSheetsLeadRepository
+  → POST to GOOGLE_SHEETS_WEBHOOK_URL
+  → google-apps-script/Code.gs appends a row to the leads sheet
   → /thank-you redirect
 ```
 
 The Server Action rejects missing/mismatched origins, unsupported sources, rate-limited requests, honeypot values, missing consent, invalid package/source combinations, malformed fields, and requests submitted in less than two seconds or more than 24 hours after the form was started. These checks are covered by focused unit tests in `src/app/actions/submit-lead.test.ts`.
 
-The database insert is authoritative. Notification delivery is attempted afterwards; a temporary notification failure is logged but does not discard a saved lead.
+The Google Sheet append is authoritative. The repository treats a non-2xx response or an invalid Apps Script response as a failed submission, so the user is not redirected as though the lead was saved.
 
-For the manual provider-backed smoke test, submit one clearly labeled internal request from `/get-started?package=trial` or `/contact`, then confirm the matching Supabase row and Resend notification. The automated Playwright suite does not submit real leads.
+For the manual provider-backed smoke test, submit one clearly labeled internal request from `/get-started?package=trial` or `/contact`, then confirm the matching Google Sheet row written by `google-apps-script/Code.gs`. The automated Playwright suite does not submit real leads.
 
 ## Health Check
 
@@ -29,62 +30,55 @@ For the manual provider-backed smoke test, submit one clearly labeled internal r
 { "status": "ok" }
 ```
 
-The endpoint verifies that the Next.js application can serve requests. It does not test Supabase or Resend connectivity; integration verification remains part of the controlled deployment smoke test.
+The endpoint verifies that the Next.js application can serve requests. It does not test Google Sheets connectivity; integration verification remains part of the controlled deployment smoke test.
 
 ## Configuration
 
-| Variable                    | Scope       | Purpose                                                                                 |
-| --------------------------- | ----------- | --------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_APP_URL`       | Public      | Canonical site URL for metadata                                                         |
-| `SUPABASE_URL`              | Server only | Supabase project URL                                                                    |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server only | Service role for server-side lead inserts; never expose it in a `NEXT_PUBLIC_` variable |
-| `RESEND_API_KEY`            | Server only | Resend API access                                                                       |
-| `RESEND_FROM_EMAIL`         | Server only | Verified Resend sender                                                                  |
-| `LEAD_NOTIFICATION_EMAIL`   | Server only | Internal receiving address                                                              |
-| `TURNSTILE_SECRET_KEY`      | Server only | Reserved CAPTCHA integration seam                                                       |
+| Variable                    | Scope       | Purpose                                                         |
+| --------------------------- | ----------- | --------------------------------------------------------------- |
+| `NEXT_PUBLIC_APP_URL`       | Public      | Canonical site URL for metadata                                 |
+| `GOOGLE_SHEETS_WEBHOOK_URL` | Server only | Deployed Google Apps Script Web App URL for appending lead rows |
+| `TURNSTILE_SECRET_KEY`      | Server only | Reserved CAPTCHA integration seam                               |
 
 ## Lead Model
 
-Migration: `supabase/migrations/202607280001_create_leads.sql`
+The lead model is mapped to a Google Sheet by `GoogleSheetsLeadRepository`. The expected header row and deployment instructions are in `google-apps-script/Code.gs`.
 
 ### Initial operational fields
 
-| Field                                | Notes                                                                  |
-| ------------------------------------ | ---------------------------------------------------------------------- |
-| `id`, `created_at`, `updated_at`     | UUID and timestamps                                                    |
-| `status`                             | `new`, `reviewing`, `contacted`, `qualified`, `converted`, or `closed` |
-| `source`                             | `package`, `trial`, or `contact`                                       |
-| `name`, `email`, `phone`, `username` | Contact details; username is optional                                  |
-| `preferred_contact_method`           | WhatsApp, Telegram, Email, or SMS                                      |
-| `company_name`, `service_area`       | Qualification context                                                  |
-| `selected_package`                   | Optional for general contact requests                                  |
-| `best_contact_time`, `notes`         | Follow-up context                                                      |
-| `consent_timestamp`                  | Consent record                                                         |
+| Field                                | Notes                                 |
+| ------------------------------------ | ------------------------------------- |
+| `timestamp`                          | Apps Script append timestamp          |
+| `status`                             | Currently written as `new`            |
+| `source`                             | `package`, `trial`, or `contact`      |
+| `name`, `email`, `phone`, `username` | Contact details; username is optional |
+| `preferred_contact_method`           | WhatsApp, Telegram, Email, or SMS     |
+| `company_name`, `service_area`       | Qualification context                 |
+| `selected_package`                   | Optional for general contact requests |
+| `best_contact_time`, `notes`         | Follow-up context                     |
+| `consent_timestamp`                  | Consent record                        |
 
-### Admin/CRM-ready fields
-
-`assigned_to`, `lifecycle_stage`, `last_contacted_at`, and `conversion_value` exist now so a future authenticated inbox, filtering, exports, CRM sync, and sales reporting can be added without a data migration.
-
-RLS is enabled and no policy grants public table access. The server action writes through the server-only Supabase service role.
+The Sheet is the operational lead record for this single-client build. Future admin/CRM fields and workflows can be added as additional columns or a separate adapter when that scope is approved.
 
 ## Provider Boundaries
 
-- `LeadRepository` abstracts persistence. `SupabaseLeadRepository` currently implements it through Supabase PostgREST.
-- `LeadNotificationService` abstracts notifications. `ResendLeadNotificationService` currently implements it through Resend’s API.
+- `LeadRepository` abstracts persistence. `GoogleSheetsLeadRepository` currently implements it through the Google Apps Script Web App.
 - `LeadSubmissionService` orchestrates the use case and is unaware of framework routes or provider HTTP details.
 
-These contracts are the extension points for a CRM adapter, queue/outbox delivery, a future admin inbox, or a new provider.
+This contract is the extension point for a CRM adapter, queue/outbox delivery, a future admin inbox, or a new storage provider.
 
 ## Analytics Events
 
-The typed event names in `src/lib/analytics.ts` are reserved for a privacy-reviewed analytics integration. No PII is sent and no vendor script is enabled in this release.
+The typed event names in `src/lib/analytics.ts` are wired into the application with a production-safe no-op default. Analytics fire only when `NEXT_PUBLIC_ANALYTICS_ENABLED=true` is set in the environment. No PII (name, email, phone, notes, etc.) is ever included in analytics payloads — `buildPrivacySafePayload` strips all known contact fields before tracking.
 
-| Event                  | Intended trigger                       |
-| ---------------------- | -------------------------------------- |
-| `homepage_view`        | Home-page visit                        |
-| `package_view`         | Package detail or pricing view         |
-| `package_selected`     | Appointment package selection          |
-| `form_started`         | Qualification/contact form interaction |
-| `form_completed`       | Successful qualification submission    |
-| `free_trial_requested` | Trial request submitted                |
-| `contact_submitted`    | General contact inquiry submitted      |
+| Event                  | Intended trigger                    |
+| ---------------------- | ----------------------------------- |
+| `homepage_view`        | Home-page visit                     |
+| `package_view`         | Package detail or pricing view      |
+| `package_selected`     | Navigation to `/get-started`        |
+| `form_started`         | Lead form gains focus               |
+| `form_completed`       | Successful qualification submission |
+| `free_trial_requested` | Trial request submitted             |
+| `contact_submitted`    | General contact inquiry submitted   |
+
+The `AnalyticsPageView` client component (rendered in `src/app/layout.tsx`) maps known routes to page-view events. The `submitLead` server action fires `form_completed`, `free_trial_requested`, and `contact_submitted` after a successful lead save. The `LeadForm` client component fires `form_started` on first focus. All calls are no-ops when analytics are disabled.

@@ -9,7 +9,7 @@ This document covers the security posture, practices, and considerations for the
 - All sensitive values are stored in `.env.local` (never committed)
 - `.env.example` documents the schema without real values
 - `src/lib/env.ts` supplies safe local defaults for public site metadata
-- `validateProductionEnvironment()` only prevents a production canonical URL from using `localhost`; it is a release helper and does not validate provider connectivity. Supabase and Resend configuration is checked when a lead is submitted.
+- `validateProductionEnvironment()` only prevents a production canonical URL from using `localhost`; it is a release helper and does not validate provider connectivity. Google Sheets configuration is checked when a lead is submitted.
 - No secrets are embedded in source code or client-side bundles
 
 ## Data Handling
@@ -18,8 +18,8 @@ This document covers the security posture, practices, and considerations for the
 
 1. **Validation** — every form field is parsed on the server with a strict Zod schema, allow-listed contact methods, length limits, and normalized email
 2. **Abuse controls** — hidden honeypot, minimum completion time, same-origin verification, and a process-local rate-limit safety net protect the Server Action
-3. **Storage** — leads are stored by a server-only Supabase service role; RLS is enabled and no public table policy is created
-4. **Notification** — Resend receives plain-text internal notification content only after storage succeeds
+3. **Storage** — `GoogleSheetsLeadRepository` posts leads from the server to the Google Apps Script Web App, which appends a row to the configured Sheet
+4. **Notification** — the Sheet append is the storage and notification mechanism for this single-client build
 5. **Transmission** — all production API communication uses HTTPS (enforced by Vercel)
 
 ### Rate Limiting and CAPTCHA
@@ -51,25 +51,21 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 - **Browser protections** — `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, strict referrer policy, a restrictive permissions policy, and production HSTS are set through `next.config.ts`
 - **CSRF protection** — the Server Action verifies same-origin `Origin`/`Host` before mutating data
 - **XSS prevention** — React escapes rendered text; the server schema also strips markup from stored free text
-- **Lead boundary tests** — Server Action rejection paths and Supabase/Resend adapter contracts are covered by focused tests before provider credentials are used
+- **Lead boundary tests** — Server Action rejection paths and the Google Sheets adapter contract are covered by focused tests before the webhook URL is used
 
 ## Operational Checks
 
 - `GET /api/health` returns `{ "status": "ok" }` with `Cache-Control: no-store` and performs no provider calls.
 - Playwright browser smoke tests run against a local development server and cover the primary package-selection and SEO paths.
 
-## Supabase Security
+## Google Sheets / Apps Script Security
 
-- Row Level Security (RLS) policies on `leads` table
-- Service role key stored server-side only (never client-exposed)
-- The application does not use a Supabase anon key; it writes through the server-only service-role key, which bypasses RLS. RLS remains enabled to prevent public table access and to protect future non-service-role clients.
-- Database migrations run through Supabase CLI or manual SQL
-
-## Resend Security
-
-- API key stored in server-side environment only
-- Email templates use server-side rendering
-- No user data included in email subjects or preview text
+- `google-apps-script/Code.gs` executes as the Sheet owner and appends rows to the bound Sheet.
+- The Web App is intentionally configured to accept POSTs from anyone with the link for this single-client build; it is not an authenticated public API.
+- The webhook URL remains server-only and must not be placed in a `NEXT_PUBLIC_` variable. If it is exposed or abused, redeploy the Apps Script Web App and rotate the Vercel value.
+- The actual application gate is the Next.js Server Action: same-origin verification, Zod validation and normalization, honeypot/timing checks, and process-local rate limiting run before the webhook call. Distributed edge rate limiting remains required before public launch.
+- `google-apps-script/Code.gs` prefixes formula-leading cell values before appending them, preventing submitted names, phone numbers, notes, or other fields from being evaluated as Sheet formulas.
+- Apps Script execution logs and unexpected Sheet rows should be reviewed after launch; the webhook itself does not replace application-level abuse controls.
 
 ## Vercel Security
 
@@ -81,10 +77,12 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 ## Analytics Privacy
 
 - Analytics interface defined in `src/lib/analytics.ts` with typed event constants
-- No vendor integration or client-side tracking calls in the current phase
-- When implemented, analytics will collect only necessary event data
-- No personally identifiable information (PII) sent to analytics providers
-- No third-party JavaScript without audit (per ADR-009 Asset Policy)
+- Default production behavior is a true no-op; events fire only when `NEXT_PUBLIC_ANALYTICS_ENABLED=true`
+- `buildPrivacySafePayload` strips all known PII fields (name, email, phone, notes, username, company name, service area, best contact time, preferred contact method) before any event is tracked
+- No vendor integration or client-side tracking SDK is included; the enabled path logs to `console.log` as a placeholder
+- No third-party JavaScript is loaded without audit (per ADR-009 Asset Policy)
+- Analytics wiring in `AnalyticsPageView` (layout) and `LeadForm` cannot break lead submission or page rendering — all calls are wrapped in no-op guards
+- When a vendor is integrated, the `createTracker` placeholder in `src/lib/analytics.ts` is the single extension point
 
 ## Asset Security
 

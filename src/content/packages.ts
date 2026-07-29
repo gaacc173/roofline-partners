@@ -1,19 +1,19 @@
 /**
  * Package configuration for Roofline Partners.
  *
- * Each package defines the appointment quantity, sample price,
+ * PLACEHOLDER — replace with client-approved pricing before launch.
+ *
+ * Each package defines the monthly price, lead features,
  * benefits, and whether it should be highlighted as the recommended option.
  *
- * Pricing is illustrative only. Final availability and pricing are confirmed
- * by the Roofline team after a qualification request.
+ * Pricing below is sample/placeholder only. Final availability, pricing, and
+ * terms are confirmed by the Roofline team after a qualification request.
  */
 
 export interface Package {
   id: string;
   name: string;
-  /** Number of qualified appointments requested */
-  appointmentQuantity: number;
-  /** Display sample price — never a final purchase price */
+  /** Monthly sample price — illustrative only, not a final purchase price */
   price: string;
   priceNote: string;
   /** Short description */
@@ -26,11 +26,11 @@ export interface Package {
   cta: string;
 }
 
+// PLACEHOLDER — replace with client-approved pricing before launch.
 export const packages: Package[] = [
   {
     id: "trial",
     name: "Trial",
-    appointmentQuantity: 2,
     price: "Complimentary",
     priceNote: "Available to qualifying roofing companies; subject to service-area fit.",
     description:
@@ -47,14 +47,15 @@ export const packages: Package[] = [
   {
     id: "starter-10",
     name: "Starter",
-    appointmentQuantity: 10,
-    price: "$1,250",
-    priceNote: "Sample price; final package terms are confirmed after qualification.",
-    description: "A focused starting package for teams testing a new appointment channel.",
+    price: "$499/mo",
+    priceNote: "SAMPLE — placeholder pricing; final terms confirmed after qualification.",
+    description:
+      "A focused starting package with basic lead capture for teams testing a new appointment channel.",
     benefits: [
-      "10 requested roofing appointments",
+      "10 qualified leads per month — placeholder volume; confirm with client before launch",
+      "Basic lead capture and qualification form",
+      "Google Sheets / Apps Script lead notifications",
       "Service-area alignment discussion",
-      "Preferred-contact capture",
       "Manual onboarding before fulfillment",
     ],
     highlighted: false,
@@ -63,13 +64,15 @@ export const packages: Package[] = [
   {
     id: "growth-20",
     name: "Growth",
-    appointmentQuantity: 20,
-    price: "$2,300",
-    priceNote: "Sample price; final package terms are confirmed after qualification.",
-    description: "A balanced appointment volume for teams ready to build a steadier pipeline.",
+    price: "$899/mo",
+    priceNote: "SAMPLE — placeholder pricing; final terms confirmed after qualification.",
+    description:
+      "Higher lead volume with priority routing and monthly reporting for teams ready to build a steadier pipeline.",
     benefits: [
-      "20 requested roofing appointments",
-      "Priority package review",
+      "20 qualified leads per month — placeholder volume; confirm with client before launch",
+      "Priority lead routing",
+      "Monthly performance report",
+      "Google Sheets / Apps Script lead notifications",
       "Service-area and qualification alignment",
       "Personal handoff to onboarding",
     ],
@@ -78,20 +81,22 @@ export const packages: Package[] = [
   },
   {
     id: "scale-40",
-    name: "Scale",
-    appointmentQuantity: 40,
-    price: "$4,200",
-    priceNote: "Sample price; final package terms are confirmed after qualification.",
+    name: "Pro / Scale",
+    price: "$1,499/mo",
+    priceNote: "SAMPLE — placeholder pricing; final terms confirmed after qualification.",
     description:
-      "A higher-volume option for established teams with capacity for more conversations.",
+      "Our highest-tier option with exclusive territory protection and unlimited leads for established teams.",
     benefits: [
-      "40 requested roofing appointments",
-      "Capacity and coverage discussion",
-      "Preferred-contact capture",
+      "Unlimited qualified leads — placeholder; confirm with client before launch",
+      "Exclusive territory protection",
+      "Dedicated account contact",
+      "Priority lead routing",
+      "Monthly performance report",
+      "Google Sheets / Apps Script lead notifications",
       "Manual onboarding before fulfillment",
     ],
     highlighted: false,
-    cta: "Request Scale",
+    cta: "Request Pro / Scale",
   },
 ] as const;
 

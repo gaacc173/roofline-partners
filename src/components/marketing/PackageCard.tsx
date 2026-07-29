@@ -22,7 +22,7 @@ export function PackageCard({ packageItem, compact = false, selected = false }: 
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase">
-            {packageItem.appointmentQuantity} appointments
+            Monthly package
           </p>
           <h3 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
             {packageItem.name}

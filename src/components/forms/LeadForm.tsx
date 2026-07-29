@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { submitLead, type LeadFormState } from "@/app/actions/submit-lead";
 import { contactMethods, type LeadSource } from "@/features/leads/lead-schema";
+import { analytics, AnalyticsEvent } from "@/lib/analytics";
 
 const initialState: LeadFormState = {};
 
@@ -22,6 +23,7 @@ export function LeadForm({ source, selectedPackage, submitLabel }: LeadFormProps
   const [state, formAction, pending] = useActionState(submitLead, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const startFieldRef = useRef<HTMLInputElement>(null);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
     if (state.error) {
@@ -40,6 +42,10 @@ export function LeadForm({ source, selectedPackage, submitLabel }: LeadFormProps
       onFocusCapture={() => {
         if (startFieldRef.current && !startFieldRef.current.value) {
           startFieldRef.current.value = String(Date.now());
+        }
+        if (!hasStartedRef.current) {
+          hasStartedRef.current = true;
+          analytics.track(AnalyticsEvent.FORM_STARTED, { source });
         }
       }}
     >

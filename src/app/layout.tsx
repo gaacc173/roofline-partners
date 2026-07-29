@@ -5,6 +5,7 @@ import { site } from "@/content/site";
 import { validateEnv } from "@/lib/env";
 import { organizationJsonLd, serviceJsonLd } from "@/lib/structured-data";
 import { StructuredData } from "@/components/seo/StructuredData";
+import { AnalyticsPageView } from "@/components/analytics/AnalyticsPageView";
 import "@/app/globals.css";
 
 const env = validateEnv();
@@ -64,6 +65,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <Header />
+        <AnalyticsPageView />
         <main id="main-content" className="flex-1">
           {children}
         </main>

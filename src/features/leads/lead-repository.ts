@@ -4,24 +4,25 @@ export interface LeadRepository {
   create(lead: StoredLead): Promise<{ id: string }>;
 }
 
-interface SupabaseLeadResponse {
-  id: string;
+interface SheetsWebhookResponse {
+  ok?: boolean;
+  id?: string;
+  error?: string;
 }
 
-export class SupabaseLeadRepository implements LeadRepository {
-  constructor(
-    private readonly url: string,
-    private readonly serviceRoleKey: string,
-  ) {}
+/**
+ * Sends a lead to a Google Apps Script Web App bound to a Google Sheet.
+ * The Web App appends a row and returns { ok: true, id }.
+ * See docs/SETUP.md for the Apps Script deployment steps.
+ */
+export class GoogleSheetsLeadRepository implements LeadRepository {
+  constructor(private readonly webhookUrl: string) {}
 
   async create(lead: StoredLead): Promise<{ id: string }> {
-    const response = await fetch(`${this.url}/rest/v1/leads`, {
+    const response = await fetch(this.webhookUrl, {
       method: "POST",
       headers: {
-        apikey: this.serviceRoleKey,
-        Authorization: `Bearer ${this.serviceRoleKey}`,
         "Content-Type": "application/json",
-        Prefer: "return=representation",
       },
       body: JSON.stringify({
         status: "new",
@@ -29,11 +30,11 @@ export class SupabaseLeadRepository implements LeadRepository {
         name: lead.name,
         email: lead.email,
         phone: lead.phone,
-        username: lead.username ?? null,
+        username: lead.username ?? "",
         preferred_contact_method: lead.preferredContactMethod,
         company_name: lead.companyName,
         service_area: lead.serviceArea,
-        selected_package: lead.selectedPackage ?? null,
+        selected_package: lead.selectedPackage ?? "",
         best_contact_time: lead.bestContactTime,
         notes: lead.notes,
         consent_timestamp: lead.consentTimestamp,
@@ -45,12 +46,11 @@ export class SupabaseLeadRepository implements LeadRepository {
       throw new Error("Lead storage failed.");
     }
 
-    const data = (await response.json()) as SupabaseLeadResponse[];
-    const created = data[0];
-    if (!created?.id) {
+    const data = (await response.json()) as SheetsWebhookResponse;
+    if (!data.ok) {
       throw new Error("Lead storage returned an invalid response.");
     }
 
-    return { id: created.id };
+    return { id: data.id ?? lead.consentTimestamp };
   }
 }

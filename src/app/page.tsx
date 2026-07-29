@@ -1,8 +1,9 @@
-import { AppointmentFlow, PackageCard } from "@/components/marketing";
+import { AppointmentFlow, PackageCard, TestimonialCard } from "@/components/marketing";
 import { Container, SectionHeading } from "@/components/ui";
 import { faqs } from "@/content/faqs";
 import { homeContent, processContent } from "@/content/marketing";
 import { packages } from "@/content/packages";
+import { testimonials } from "@/content/trust";
 
 export default function Home() {
   return (
@@ -174,6 +175,26 @@ export default function Home() {
               </a>
             </div>
           </div>
+        </Container>
+      </section>
+
+      <section className="border-y border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-900/40 sm:py-28">
+        <Container size="xl">
+          <SectionHeading
+            tag="Testimonials"
+            title="What roofing teams are saying"
+            subtitle="Placeholder testimonials demonstrating layout. These will be replaced with verified client reviews before launch."
+            align="center"
+            className="mx-auto max-w-3xl"
+          />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {testimonials.map((t) => (
+              <TestimonialCard key={t.name + t.quote} testimonial={t} />
+            ))}
+          </div>
+          <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+            All testimonials shown are sample placeholders and have not been verified.
+          </p>
         </Container>
       </section>
 

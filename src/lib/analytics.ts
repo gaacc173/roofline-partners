@@ -6,7 +6,13 @@
  * this is the contract that future analytics implementations must satisfy.
  *
  * Event naming convention: entity_action (lowercase, underscore-separated).
+ *
+ * Privacy guarantee: analytics payloads never contain PII. Helper
+ * `buildPrivacySafePayload` strips name, email, phone, notes, and other
+ * contact fields before any event is tracked.
  */
+
+import { validateEnv } from "./env";
 
 /** Typed event names */
 export const AnalyticsEvent = {
@@ -53,7 +59,47 @@ export const noopTracker: AnalyticsTracker = {
 };
 
 /**
+ * Fields that must never appear in analytics payloads.
+ * These correspond to PII fields collected by the lead pipeline.
+ */
+const PII_FIELDS = new Set([
+  "name",
+  "email",
+  "phone",
+  "notes",
+  "username",
+  "companyName",
+  "serviceArea",
+  "bestContactTime",
+  "preferredContactMethod",
+  "company_name",
+  "service_area",
+  "best_contact_time",
+  "preferred_contact_method",
+]);
+
+/**
+ * Build a privacy-safe analytics payload by stripping PII fields.
+ *
+ * @param data - Raw payload that may contain sensitive fields
+ * @returns A new payload with PII fields removed
+ */
+export function buildPrivacySafePayload(data: AnalyticsEventPayload): AnalyticsEventPayload {
+  const safe: AnalyticsEventPayload = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (!PII_FIELDS.has(key)) {
+      safe[key] = value;
+    }
+  }
+  return safe;
+}
+
+/**
  * Create a tracker based on the analytics enabled flag.
+ *
+ * Reads the `NEXT_PUBLIC_ANALYTICS_ENABLED` environment variable.
+ * When disabled (default), returns a no-op tracker that incurs
+ * zero runtime overhead.
  *
  * @param enabled - Whether analytics tracking is enabled
  * @returns A tracker instance (real or no-op)
@@ -72,3 +118,16 @@ export function createTracker(enabled: boolean): AnalyticsTracker {
   }
   return noopTracker;
 }
+
+/**
+ * Whether analytics are enabled, resolved from the environment.
+ * Defaults to false so analytics are a true no-op in production
+ * until a vendor is approved and the flag is set.
+ */
+const analyticsEnabled = validateEnv().NEXT_PUBLIC_ANALYTICS_ENABLED === "true";
+
+/**
+ * Singleton analytics tracker — a no-op unless explicitly enabled
+ * via the `NEXT_PUBLIC_ANALYTICS_ENABLED` environment variable.
+ */
+export const analytics: AnalyticsTracker = createTracker(analyticsEnabled);

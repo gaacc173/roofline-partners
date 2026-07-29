@@ -4,11 +4,11 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLeadIntegrationConfig } from "@/lib/env";
 import { LeadSubmissionService } from "@/features/leads/lead-service";
-import { SupabaseLeadRepository } from "@/features/leads/lead-repository";
-import { ResendLeadNotificationService } from "@/features/leads/notification-service";
+import { GoogleSheetsLeadRepository } from "@/features/leads/lead-repository";
 import { leadSources, leadSubmissionSchema, type LeadSource } from "@/features/leads/lead-schema";
 import { isRateLimited } from "@/features/leads/rate-limit";
 import { getPackageById } from "@/content/packages";
+import { analytics, AnalyticsEvent, buildPrivacySafePayload } from "@/lib/analytics";
 
 export interface LeadFormState {
   error?: string;
@@ -95,14 +95,22 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
   try {
     const config = getLeadIntegrationConfig();
     const service = new LeadSubmissionService(
-      new SupabaseLeadRepository(config.supabaseUrl, config.supabaseServiceRoleKey),
-      new ResendLeadNotificationService(
-        config.resendApiKey,
-        config.resendFromEmail,
-        config.notificationEmail,
-      ),
+      new GoogleSheetsLeadRepository(config.googleSheetsWebhookUrl),
     );
     await service.submit(parsed.data, source);
+
+    // Fire privacy-safe analytics events on successful submission
+    const safePayload = buildPrivacySafePayload({
+      source,
+      selectedPackage: parsed.data.selectedPackage,
+    });
+    analytics.track(AnalyticsEvent.FORM_COMPLETED, safePayload);
+
+    if (source === "trial") {
+      analytics.track(AnalyticsEvent.FREE_TRIAL_REQUESTED, safePayload);
+    } else if (source === "contact") {
+      analytics.track(AnalyticsEvent.CONTACT_SUBMITTED, safePayload);
+    }
   } catch (error) {
     console.error("Lead submission failed.", error);
     return {

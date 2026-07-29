@@ -20,42 +20,22 @@ function makeSubmission() {
 }
 
 describe("LeadSubmissionService", () => {
-  it("stores before notifying and returns the stored id", async () => {
+  it("stores the lead and returns the stored id", async () => {
     const repository = { create: vi.fn().mockResolvedValue({ id: "lead-123" }) };
-    const notifier = { notifyNewLead: vi.fn().mockResolvedValue(undefined) };
-    const service = new LeadSubmissionService(repository, notifier);
+    const service = new LeadSubmissionService(repository);
 
     await expect(service.submit(makeSubmission(), "package")).resolves.toEqual({ id: "lead-123" });
     expect(repository.create).toHaveBeenCalledOnce();
-    expect(notifier.notifyNewLead).toHaveBeenCalledOnce();
-    expect(notifier.notifyNewLead.mock.invocationCallOrder[0]).toBeGreaterThan(
-      repository.create.mock.invocationCallOrder[0],
-    );
-    expect(notifier.notifyNewLead).toHaveBeenCalledWith(repository.create.mock.calls[0][0]);
   });
 
-  it("keeps the stored lead successful when notification fails", async () => {
-    const repository = { create: vi.fn().mockResolvedValue({ id: "lead-456" }) };
-    const notifier = { notifyNewLead: vi.fn().mockRejectedValue(new Error("Resend unavailable")) };
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    const service = new LeadSubmissionService(repository, notifier);
-
-    await expect(service.submit(makeSubmission(), "package")).resolves.toEqual({ id: "lead-456" });
-    expect(errorSpy).toHaveBeenCalledWith(
-      "Lead notification failed after storage.",
-      expect.objectContaining({ leadId: "lead-456" }),
-    );
-    errorSpy.mockRestore();
-  });
-
-  it("does not notify when storage fails", async () => {
-    const repository = { create: vi.fn().mockRejectedValue(new Error("Supabase unavailable")) };
-    const notifier = { notifyNewLead: vi.fn() };
-    const service = new LeadSubmissionService(repository, notifier);
+  it("propagates storage errors", async () => {
+    const repository = {
+      create: vi.fn().mockRejectedValue(new Error("Sheets webhook unavailable")),
+    };
+    const service = new LeadSubmissionService(repository);
 
     await expect(service.submit(makeSubmission(), "package")).rejects.toThrow(
-      "Supabase unavailable",
+      "Sheets webhook unavailable",
     );
-    expect(notifier.notifyNewLead).not.toHaveBeenCalled();
   });
 });

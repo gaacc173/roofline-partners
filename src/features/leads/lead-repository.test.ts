@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SupabaseLeadRepository } from "./lead-repository";
+import { GoogleSheetsLeadRepository } from "./lead-repository";
 import type { StoredLead } from "./lead-schema";
 
 const lead: StoredLead = {
@@ -16,27 +16,21 @@ const lead: StoredLead = {
   consentTimestamp: "2026-07-29T12:00:00.000Z",
 };
 
-describe("SupabaseLeadRepository", () => {
+describe("GoogleSheetsLeadRepository", () => {
   beforeEach(() => vi.restoreAllMocks());
 
-  it("posts a server-shaped lead with service-role authorization", async () => {
+  it("posts the lead to the configured webhook URL", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
-      .mockResolvedValue(new Response(JSON.stringify([{ id: "lead-123" }]), { status: 201 }));
-    const repository = new SupabaseLeadRepository("https://project.supabase.co", "service-secret");
+      .mockResolvedValue(new Response(JSON.stringify({ ok: true, id: "row-5" }), { status: 200 }));
+    const repository = new GoogleSheetsLeadRepository(
+      "https://script.google.com/macros/s/xyz/exec",
+    );
 
-    await expect(repository.create(lead)).resolves.toEqual({ id: "lead-123" });
+    await expect(repository.create(lead)).resolves.toEqual({ id: "row-5" });
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://project.supabase.co/rest/v1/leads",
-      expect.objectContaining({
-        method: "POST",
-        cache: "no-store",
-        headers: expect.objectContaining({
-          apikey: "service-secret",
-          Authorization: "Bearer service-secret",
-          Prefer: "return=representation",
-        }),
-      }),
+      "https://script.google.com/macros/s/xyz/exec",
+      expect.objectContaining({ method: "POST", cache: "no-store" }),
     );
     const request = fetchMock.mock.calls[0]?.[1];
     expect(JSON.parse(String(request?.body))).toMatchObject({
@@ -47,26 +41,16 @@ describe("SupabaseLeadRepository", () => {
     });
   });
 
-  it("maps absent optional values to null", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify([{ id: "lead-789" }]), { status: 201 }),
-    );
-    const repository = new SupabaseLeadRepository("https://project.supabase.co", "service-secret");
-
-    await repository.create({ ...lead, username: undefined, selectedPackage: undefined });
-    const request = vi.mocked(globalThis.fetch).mock.calls[0]?.[1];
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      username: null,
-      selected_package: null,
-    });
-  });
-
   it("rejects provider errors and invalid success responses", async () => {
-    const repository = new SupabaseLeadRepository("https://project.supabase.co", "service-secret");
+    const repository = new GoogleSheetsLeadRepository(
+      "https://script.google.com/macros/s/xyz/exec",
+    );
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("failed", { status: 500 }));
     await expect(repository.create(lead)).rejects.toThrow("Lead storage failed.");
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("[]", { status: 201 }));
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ ok: false }), { status: 200 }),
+    );
     await expect(repository.create(lead)).rejects.toThrow(
       "Lead storage returned an invalid response.",
     );

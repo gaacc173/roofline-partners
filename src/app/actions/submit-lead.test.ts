@@ -3,12 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   requestHeaders: new Headers(),
   isRateLimited: vi.fn(() => false),
+  validateEnv: vi.fn(() => ({
+    NEXT_PUBLIC_APP_NAME: "Roofline Partners",
+    NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+    NEXT_PUBLIC_ANALYTICS_ENABLED: undefined,
+  })),
   getLeadIntegrationConfig: vi.fn(() => ({
-    supabaseUrl: "https://project.supabase.co",
-    supabaseServiceRoleKey: "supabase-secret",
-    resendApiKey: "resend-secret",
-    resendFromEmail: "from@example.com",
-    notificationEmail: "owner@example.com",
+    googleSheetsWebhookUrl: "https://script.google.com/macros/s/xyz/exec",
   })),
   submit: vi.fn().mockResolvedValue({ id: "lead-123" }),
   redirect: vi.fn((destination: string): never => {
@@ -21,17 +22,17 @@ vi.mock("next/headers", () => ({
 }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 vi.mock("@/features/leads/rate-limit", () => ({ isRateLimited: mocks.isRateLimited }));
-vi.mock("@/lib/env", () => ({ getLeadIntegrationConfig: mocks.getLeadIntegrationConfig }));
+vi.mock("@/lib/env", () => ({
+  getLeadIntegrationConfig: mocks.getLeadIntegrationConfig,
+  validateEnv: mocks.validateEnv,
+}));
 vi.mock("@/features/leads/lead-service", () => ({
   LeadSubmissionService: class {
     submit = mocks.submit;
   },
 }));
 vi.mock("@/features/leads/lead-repository", () => ({
-  SupabaseLeadRepository: class {},
-}));
-vi.mock("@/features/leads/notification-service", () => ({
-  ResendLeadNotificationService: class {},
+  GoogleSheetsLeadRepository: class {},
 }));
 
 import { submitLead } from "./submit-lead";

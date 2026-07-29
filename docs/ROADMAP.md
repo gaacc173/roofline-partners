@@ -47,17 +47,17 @@
 - [x] Content/configuration modules for public copy and packages
 - [x] Complete premium homepage and shared conversion sections
 - [x] Contact page with lead form (/contact)
-- [ ] Verified testimonial/social-proof section once approved evidence is supplied
+- [x] Placeholder testimonials with explicit sample labeling (pending client-approved reviews)
 - [x] JSON-LD: Organization + Service schemas
 
 ### Milestone 5: Lead Capture MVP
 
-- [x] Supabase `leads` migration (apply it to the configured project before launch)
+- [x] Google Sheets lead destination via `google-apps-script/Code.gs` (deploy it before launch)
 - [x] Server Action for lead submission
 - [x] Form validation and accessible server-error UX
-- [x] Resend email notification adapter
+- [x] `GoogleSheetsLeadRepository` webhook adapter
 - [x] Server Action and provider contract test coverage
-- [ ] Analytics event tracking for form submissions (typed seam exists; vendor intentionally deferred)
+- [x] Analytics event tracking for form submissions (vendor-neutral tracker, privacy-safe, no-op by default)
 - [x] Success/error UX for form
 
 ### Milestone 6: SEO & Polish
@@ -73,12 +73,12 @@
 ### Milestone 7: Deployment & CI/CD
 
 - [x] Vercel deployment path documented
-- [ ] Production environment variables
+- [ ] Production `GOOGLE_SHEETS_WEBHOOK_URL` and other environment variables
 - [x] CI pipeline (format, lint, typecheck, unit/browser tests, build on PR)
 - [x] Health check endpoint (`/api/health`)
 - [x] Rollback procedures documented in `docs/OPERATIONS.md`
-- [ ] Admin capability seam (no full dashboard)
-- [ ] Monitoring & error tracking setup
+- [ ] Admin capability seam (deferred — no full dashboard in v1; `LeadSubmissionService` / `LeadRepository` contract is the extension point)
+- [ ] Monitoring & error tracking (deferred — no Sentry, Datadog, or equivalent; `console.error` is current server-side logging)
 
 ## Timeline
 
@@ -87,9 +87,20 @@
 | 1. Foundation              | 2026-07-28 | ✅ Done   |
 | 2. Documentation           | 2026-07-28 | ✅ Done   |
 | 3. Design System & Layout  | 2026-07-28 | ✅ Done   |
-| 4. Marketing Content Pages | 2026-07-28 | ✅ Done   |
+| 4. Marketing Content Pages | 2026-07-29 | ✅ Done*  |
 | 5. Lead Capture MVP        | 2026-07-28 | ✅ Done   |
 | 6. SEO & Polish            | 2026-07-28 | ✅ Done*  |
 | 7. Deployment & CI/CD      | 2026-07-29 | ✅ Ready* |
 
 `*` Repository code, CI, launch documentation, and rollback procedures are ready. External launch prerequisites remain production provider configuration, distributed rate limiting, deployed Lighthouse/axe checks, monitoring/error tracking, and approved business proof/content.
+
+## Deferred / Out of Scope
+
+The following items are explicitly deferred or out of scope for this single-client site:
+
+- **Admin capability seam** — no authenticated admin inbox or dashboard in v1; the `LeadSubmissionService` / `LeadRepository` contract is the extension point for a future admin CRM.
+- **Monitoring & error-tracking vendor** — no Sentry, Datadog, or equivalent integration at this time; server-side errors are logged with `console.error`.
+- **Distributed edge rate limiting** — the process-local rate limiter in the lead action is not multi-instance safe; edge-level controls (Vercel Firewall, Cloudflare) are deferred until deployment.
+- **Placeholder pricing** — current package tiers in `src/content/packages.ts` are sample amounts marked `PLACEHOLDER`; replace with client-approved pricing before launch.
+- **Placeholder testimonials** — `src/content/trust.ts` contains sample testimonials marked `placeholder: true`; replace with verified, consented reviews before launch.
+- **Deployment readiness** — the codebase and CI are ready pending manual Vercel/domain deployment, env var configuration, and live Lighthouse/axe audits.

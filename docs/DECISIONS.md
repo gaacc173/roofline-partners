@@ -145,4 +145,16 @@ The full audit may still report a development-only ESLint 9 transitive advisory.
 - **Decision**: Add `GET /api/health` returning a cache-disabled `{ status: "ok" }` response. Provider readiness remains a deployment smoke-test concern.
 - **Consequences**:
   - Monitoring is cheap, deterministic, and safe to poll.
-  - A healthy liveness response does not imply Supabase or Resend availability.
+  - A healthy liveness response does not imply Google Sheets or Apps Script availability.
+
+## ADR-016: Migrate Lead Storage from Supabase/Resend to Google Sheets
+
+- **Status**: Accepted
+- **Date**: 2026-07-29
+- **Context**: The single-client MVP needs a dependable lead destination without the operational overhead of running a database and email service for one client. ADR-006 records the earlier decision to defer the Supabase/Resend integration and ADR-013 records those providers as the initial adapters.
+- **Decision**: Store leads through `GoogleSheetsLeadRepository`, which posts to the `GOOGLE_SHEETS_WEBHOOK_URL` Google Apps Script Web App defined in `google-apps-script/Code.gs`. The Web App appends each accepted lead as a row in the configured Google Sheet; the Sheet is the operational notification and storage destination.
+- **Consequences**:
+  - The application has no Supabase or Resend runtime dependency for lead capture.
+  - Google account access and a deployed Apps Script Web App are required before real submissions can be accepted.
+  - The webhook URL remains server-only, while same-origin checks, Zod validation, honeypot/timing checks, and rate limiting remain the application-level gates.
+  - A future CRM, queue/outbox, or database adapter can replace the repository without changing public forms or the submission service.

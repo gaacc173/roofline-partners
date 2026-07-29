@@ -13,7 +13,7 @@ export default function PackagesPage() {
       <SectionHeading
         tag="Our Packages"
         title="Appointment packages that match your capacity"
-        subtitle="Compare the trial and appointment quantities, then submit a qualification request. Final availability and terms are confirmed by our team."
+        subtitle="Compare the trial and monthly package options, then submit a qualification request. Final availability and terms are confirmed by our team."
       />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {packages.map((pkg) => (
