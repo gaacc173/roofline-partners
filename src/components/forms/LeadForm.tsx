@@ -101,7 +101,8 @@ export function LeadForm({ submitLabel }: { submitLabel: string }) {
           <FieldError id="lead-company-name-error" errors={state.fieldErrors?.companyName} />
         </label>
         <label className="block text-sm font-semibold text-slate-800 dark:text-slate-100">
-          ZIP code <span className="font-normal text-slate-500">(optional)</span>
+          ZIP code{" "}
+          <span className="font-normal text-slate-600 dark:text-slate-400">(optional)</span>
           <input
             id="lead-zip-code"
             name="zipCode"
@@ -146,7 +147,8 @@ export function LeadForm({ submitLabel }: { submitLabel: string }) {
           <FieldError id="lead-phone-error" errors={state.fieldErrors?.phone} />
         </label>
         <label className="block text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Username <span className="font-normal text-slate-500">(optional)</span>
+          Username{" "}
+          <span className="font-normal text-slate-600 dark:text-slate-400">(optional)</span>
           <input
             id="lead-username"
             name="username"
