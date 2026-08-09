@@ -3,23 +3,22 @@ import { SupabaseLeadRepository } from "./lead-repository";
 import type { StoredLead } from "./lead-schema";
 
 const lead: StoredLead = {
-  source: "package",
+  source: "contact",
   name: "Jordan Rivera",
   email: "jordan@example.com",
   phone: "+1 555 555 0199",
-  preferredContactMethod: "email",
   companyName: "Rivera Roofing",
-  serviceArea: "Austin, TX",
-  selectedPackage: "growth-20",
-  bestContactTime: "Weekday afternoons",
-  notes: "Interested in suburban replacement work.",
+  zipCode: "90210",
+  requestedContactAt: "2026-08-15T14:00",
+  requestedContactTimezone: "America/Los_Angeles",
+  notes: "Interested in discussing storm repair opportunities.",
   consentTimestamp: "2026-07-29T12:00:00.000Z",
 };
 
 describe("SupabaseLeadRepository", () => {
   beforeEach(() => vi.restoreAllMocks());
 
-  it("posts a server-shaped lead with service-role authorization", async () => {
+  it("posts the scheduling request with server-only authorization", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(new Response(JSON.stringify([{ id: "lead-123" }]), { status: 201 }));
@@ -41,10 +40,12 @@ describe("SupabaseLeadRepository", () => {
     const request = fetchMock.mock.calls[0]?.[1];
     expect(JSON.parse(String(request?.body))).toMatchObject({
       status: "new",
-      source: "package",
-      preferred_contact_method: "email",
-      selected_package: "growth-20",
+      source: "contact",
+      zip_code: "90210",
+      requested_contact_at: "2026-08-15T14:00",
+      requested_contact_timezone: "America/Los_Angeles",
     });
+    expect(JSON.stringify(request?.body)).not.toContain("selected_package");
   });
 
   it("maps absent optional values to null", async () => {
@@ -53,12 +54,9 @@ describe("SupabaseLeadRepository", () => {
     );
     const repository = new SupabaseLeadRepository("https://project.supabase.co", "service-secret");
 
-    await repository.create({ ...lead, username: undefined, selectedPackage: undefined });
+    await repository.create({ ...lead, username: undefined, zipCode: undefined });
     const request = vi.mocked(globalThis.fetch).mock.calls[0]?.[1];
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      username: null,
-      selected_package: null,
-    });
+    expect(JSON.parse(String(request?.body))).toMatchObject({ username: null, zip_code: null });
   });
 
   it("rejects provider errors and invalid success responses", async () => {

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { validateEnv } from "@/lib/env";
 
-const publicRoutes = ["/", "/packages", "/how-it-works", "/why-roofline", "/faq", "/contact"];
+const publicRoutes = ["/", "/how-it-works", "/why-roofline", "/faq"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const { NEXT_PUBLIC_APP_URL } = validateEnv();

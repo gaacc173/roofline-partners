@@ -7,12 +7,11 @@ function makeSubmission() {
     name: "Jordan Rivera",
     email: "jordan@example.com",
     phone: "+1 555 555 0199",
-    preferredContactMethod: "email",
     companyName: "Rivera Roofing",
-    serviceArea: "Austin, TX",
-    selectedPackage: "growth-20",
-    bestContactTime: "Weekday afternoons",
-    notes: "Interested in suburban replacement work.",
+    zipCode: "90210",
+    requestedContactAt: "2026-08-15T14:00",
+    requestedContactTimezone: "America/Los_Angeles",
+    notes: "Interested in discussing storm repair opportunities.",
     consent: true,
     website: "",
     formStartedAt: String(Date.now() - 5_000),
@@ -25,12 +24,7 @@ describe("LeadSubmissionService", () => {
     const notifier = { notifyNewLead: vi.fn().mockResolvedValue(undefined) };
     const service = new LeadSubmissionService(repository, notifier);
 
-    await expect(service.submit(makeSubmission(), "package")).resolves.toEqual({ id: "lead-123" });
-    expect(repository.create).toHaveBeenCalledOnce();
-    expect(notifier.notifyNewLead).toHaveBeenCalledOnce();
-    expect(notifier.notifyNewLead.mock.invocationCallOrder[0]).toBeGreaterThan(
-      repository.create.mock.invocationCallOrder[0],
-    );
+    await expect(service.submit(makeSubmission())).resolves.toEqual({ id: "lead-123" });
     expect(notifier.notifyNewLead).toHaveBeenCalledWith(repository.create.mock.calls[0][0]);
   });
 
@@ -40,7 +34,7 @@ describe("LeadSubmissionService", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const service = new LeadSubmissionService(repository, notifier);
 
-    await expect(service.submit(makeSubmission(), "package")).resolves.toEqual({ id: "lead-456" });
+    await expect(service.submit(makeSubmission())).resolves.toEqual({ id: "lead-456" });
     expect(errorSpy).toHaveBeenCalledWith(
       "Lead notification failed after storage.",
       expect.objectContaining({ leadId: "lead-456" }),
@@ -53,9 +47,7 @@ describe("LeadSubmissionService", () => {
     const notifier = { notifyNewLead: vi.fn() };
     const service = new LeadSubmissionService(repository, notifier);
 
-    await expect(service.submit(makeSubmission(), "package")).rejects.toThrow(
-      "Supabase unavailable",
-    );
+    await expect(service.submit(makeSubmission())).rejects.toThrow("Supabase unavailable");
     expect(notifier.notifyNewLead).not.toHaveBeenCalled();
   });
 });

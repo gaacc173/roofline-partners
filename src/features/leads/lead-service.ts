@@ -1,4 +1,4 @@
-import { toStoredLead, type LeadSource, type LeadSubmission } from "./lead-schema";
+import { toStoredLead, type LeadSubmission } from "./lead-schema";
 import type { LeadNotificationService } from "./notification-service";
 import type { LeadRepository } from "./lead-repository";
 
@@ -8,8 +8,8 @@ export class LeadSubmissionService {
     private readonly notifier: LeadNotificationService,
   ) {}
 
-  async submit(submission: LeadSubmission, source: LeadSource): Promise<{ id: string }> {
-    const lead = toStoredLead(submission, source);
+  async submit(submission: LeadSubmission): Promise<{ id: string }> {
+    const lead = toStoredLead(submission);
     const result = await this.repository.create(lead);
 
     try {

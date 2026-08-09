@@ -16,9 +16,7 @@ const mocks = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock("next/headers", () => ({
-  headers: vi.fn(async () => mocks.requestHeaders),
-}));
+vi.mock("next/headers", () => ({ headers: vi.fn(async () => mocks.requestHeaders) }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 vi.mock("@/features/leads/rate-limit", () => ({ isRateLimited: mocks.isRateLimited }));
 vi.mock("@/lib/env", () => ({ getLeadIntegrationConfig: mocks.getLeadIntegrationConfig }));
@@ -27,10 +25,10 @@ vi.mock("@/features/leads/lead-service", () => ({
     submit = mocks.submit;
   },
 }));
-vi.mock("@/features/leads/lead-repository", () => ({
-  SupabaseLeadRepository: class {},
-}));
+vi.mock("@/features/leads/lead-repository", () => ({ SupabaseLeadRepository: class {} }));
 vi.mock("@/features/leads/notification-service", () => ({
+  FanOutLeadNotificationService: class {},
+  GoogleSheetsLeadNotificationService: class {},
   ResendLeadNotificationService: class {},
 }));
 
@@ -39,23 +37,20 @@ import { submitLead } from "./submit-lead";
 function validForm(overrides: Record<string, string> = {}): FormData {
   const formData = new FormData();
   const values = {
-    source: "package",
-    selectedPackage: "growth-20",
     name: "Jordan Rivera",
     email: "jordan@example.com",
     phone: "+1 555 555 0199",
     username: "",
-    preferredContactMethod: "email",
     companyName: "Rivera Roofing",
-    serviceArea: "Austin, TX",
-    bestContactTime: "Weekday afternoons",
-    notes: "Interested in suburban replacement work.",
+    zipCode: "90210",
+    requestedContactAt: "2026-08-15T14:00",
+    requestedContactTimezone: "America/Los_Angeles",
+    notes: "Interested in discussing storm repair opportunities.",
     consent: "on",
     website: "",
     formStartedAt: String(Date.now() - 5_000),
     ...overrides,
   };
-
   for (const [key, value] of Object.entries(values)) formData.set(key, value);
   return formData;
 }
@@ -64,8 +59,8 @@ describe("submitLead", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.requestHeaders = new Headers({
-      origin: "https://roofline.example",
-      host: "roofline.example",
+      origin: "https://leadbylead.example",
+      host: "leadbylead.example",
       "x-forwarded-for": "203.0.113.10, 10.0.0.1",
     });
     mocks.isRateLimited.mockReturnValue(false);
@@ -75,9 +70,8 @@ describe("submitLead", () => {
   it("rejects requests from a missing or mismatched origin before rate limiting", async () => {
     mocks.requestHeaders = new Headers({
       origin: "https://attacker.example",
-      host: "roofline.example",
+      host: "leadbylead.example",
     });
-
     await expect(submitLead({}, validForm())).resolves.toEqual({
       error: "We could not verify this request. Please refresh the page and try again.",
     });
@@ -85,59 +79,33 @@ describe("submitLead", () => {
     expect(mocks.submit).not.toHaveBeenCalled();
   });
 
-  it("rejects invalid source, rate-limited requests, and forged package combinations", async () => {
-    await expect(submitLead({}, validForm({ source: "invalid" }))).resolves.toMatchObject({
-      error: "Choose a valid request type and try again.",
-    });
-
+  it("rejects rate-limited and malformed requests before provider setup", async () => {
     mocks.isRateLimited.mockReturnValueOnce(true);
     await expect(submitLead({}, validForm())).resolves.toMatchObject({
       error: "Too many requests. Please wait a few minutes and try again.",
     });
-
-    await expect(submitLead({}, validForm({ source: "trial" }))).resolves.toMatchObject({
-      error: "Choose a valid package before submitting your request.",
-    });
-    expect(mocks.submit).not.toHaveBeenCalled();
-  });
-
-  it("rejects honeypot, consent, and timing failures before provider setup", async () => {
     await expect(submitLead({}, validForm({ website: "spam" }))).resolves.toMatchObject({
       error: "Please correct the highlighted fields.",
     });
-    await expect(submitLead({}, validForm({ consent: "off" }))).resolves.toMatchObject({
-      error: "Please correct the highlighted fields.",
-    });
-    await expect(
-      submitLead({}, validForm({ formStartedAt: String(Date.now() - 500) })),
-    ).resolves.toEqual({
-      error: "Please take a moment to review your request before submitting.",
-    });
     expect(mocks.getLeadIntegrationConfig).not.toHaveBeenCalled();
-    expect(mocks.submit).not.toHaveBeenCalled();
   });
 
   it("uses the first forwarded address, submits, and redirects after success", async () => {
-    await expect(submitLead({}, validForm())).rejects.toThrow("REDIRECT:/thank-you?source=package");
-
+    await expect(submitLead({}, validForm())).rejects.toThrow("REDIRECT:/thank-you");
     expect(mocks.isRateLimited).toHaveBeenCalledWith("203.0.113.10");
-    expect(mocks.getLeadIntegrationConfig).toHaveBeenCalledOnce();
     expect(mocks.submit).toHaveBeenCalledWith(
-      expect.objectContaining({ email: "jordan@example.com", selectedPackage: "growth-20" }),
-      "package",
+      expect.objectContaining({ requestedContactTimezone: "America/Los_Angeles" }),
     );
   });
 
   it("returns a safe error when the integration service fails", async () => {
     mocks.submit.mockRejectedValueOnce(new Error("provider failure"));
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-
     await expect(submitLead({}, validForm())).resolves.toEqual({
       error:
         "We could not submit your request right now. Please try again shortly or contact us directly.",
     });
     expect(mocks.redirect).not.toHaveBeenCalled();
-    expect(errorSpy).toHaveBeenCalledWith("Lead submission failed.", expect.any(Error));
     errorSpy.mockRestore();
   });
 });

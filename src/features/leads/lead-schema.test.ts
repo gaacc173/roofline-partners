@@ -1,108 +1,71 @@
 import { describe, expect, it } from "vitest";
 import { leadSubmissionSchema, toStoredLead } from "./lead-schema";
 
+const validInput = {
+  name: "Jordan Rivera",
+  email: "jordan@example.com",
+  phone: "+1 555 555 0199",
+  username: "@jordanroofing",
+  companyName: "Rivera Roofing",
+  zipCode: "90210",
+  requestedContactAt: "2026-08-15T14:00",
+  requestedContactTimezone: "America/Los_Angeles",
+  notes: "Interested in discussing storm repair opportunities.",
+  consent: true,
+  website: "",
+  formStartedAt: String(Date.now() - 5_000),
+};
+
 describe("leadSubmissionSchema", () => {
-  it("normalizes a valid package request and rejects unsupported contact methods", () => {
-    const validResult = leadSubmissionSchema.safeParse({
+  it("normalizes a valid scheduling request", () => {
+    const result = leadSubmissionSchema.safeParse({
+      ...validInput,
       name: "  Jordan Rivera  ",
       email: "JORDAN@EXAMPLE.COM ",
-      phone: " +1 (555) 555-0199 ",
-      username: "@jordanroofing",
-      preferredContactMethod: "whatsapp",
-      companyName: "Rivera Roofing",
-      serviceArea: "Austin, TX",
-      selectedPackage: "growth-20",
-      bestContactTime: "Weekday afternoons",
-      notes: "Interested in <strong>suburban</strong> replacement work.",
-      consent: true,
-      website: "",
-      formStartedAt: String(Date.now() - 5_000),
+      notes: "Interested in <strong>storm repair</strong> opportunities.",
     });
 
-    expect(validResult.success).toBe(true);
-    if (validResult.success) {
-      expect(validResult.data.name).toBe("Jordan Rivera");
-      expect(validResult.data.email).toBe("jordan@example.com");
-      expect(validResult.data.notes).toBe("Interested in suburban replacement work.");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.name).toBe("Jordan Rivera");
+      expect(result.data.email).toBe("jordan@example.com");
+      expect(result.data.notes).toBe("Interested in storm repair opportunities.");
     }
+  });
 
+  it("rejects spam, missing consent, invalid timezone, and oversized messages", () => {
+    expect(leadSubmissionSchema.safeParse({ ...validInput, website: "spam" }).success).toBe(false);
+    expect(leadSubmissionSchema.safeParse({ ...validInput, consent: false }).success).toBe(false);
     expect(
-      leadSubmissionSchema.safeParse({
-        name: "Jordan Rivera",
-        email: "jordan@example.com",
-        phone: "+1 555 555 0199",
-        preferredContactMethod: "carrier-pigeon",
-        companyName: "Rivera Roofing",
-        serviceArea: "Austin, TX",
-        selectedPackage: "growth-20",
-        bestContactTime: "Weekday afternoons",
-        notes: "Interested in suburban replacement work.",
-        consent: true,
-        website: "",
-        formStartedAt: String(Date.now() - 5_000),
-      }).success,
+      leadSubmissionSchema.safeParse({ ...validInput, requestedContactTimezone: "Not/ATimezone" })
+        .success,
+    ).toBe(false);
+    expect(
+      leadSubmissionSchema.safeParse({ ...validInput, notes: "x".repeat(2_001) }).success,
     ).toBe(false);
   });
 
-  it("rejects spam fields, missing consent, unknown packages, and oversized notes", () => {
-    const base = {
-      name: "Jordan Rivera",
-      email: "jordan@example.com",
-      phone: "+1 555 555 0199",
-      preferredContactMethod: "email",
-      companyName: "Rivera Roofing",
-      serviceArea: "Austin, TX",
-      selectedPackage: "growth-20",
-      bestContactTime: "Weekday afternoons",
-      notes: "Interested in suburban replacement work.",
-      consent: true,
-      website: "",
-      formStartedAt: String(Date.now() - 5_000),
-    };
-
-    expect(
-      leadSubmissionSchema.safeParse({ ...base, website: "https://spam.example" }).success,
-    ).toBe(false);
-    expect(leadSubmissionSchema.safeParse({ ...base, consent: false }).success).toBe(false);
-    expect(
-      leadSubmissionSchema.safeParse({ ...base, selectedPackage: "not-a-package" }).success,
-    ).toBe(false);
-    expect(leadSubmissionSchema.safeParse({ ...base, notes: "x".repeat(2_001) }).success).toBe(
-      false,
-    );
-  });
-
-  it("normalizes empty optional fields and creates a stored lead without form controls", () => {
+  it("allows an optional ZIP and username, then creates a stored contact lead", () => {
     const parsed = leadSubmissionSchema.parse({
-      name: "Jordan Rivera",
-      email: "jordan@example.com",
-      phone: "+1 555 555 0199",
+      ...validInput,
       username: "",
-      preferredContactMethod: "email",
-      companyName: "Rivera Roofing",
-      serviceArea: "Austin, TX",
-      selectedPackage: "growth-20",
-      bestContactTime: "Weekday afternoons",
-      notes: "Interested in suburban replacement work.",
-      consent: true,
-      website: "",
-      formStartedAt: String(Date.now() - 5_000),
+      zipCode: "",
     });
     const submittedAt = new Date("2026-07-29T12:00:00.000Z");
 
     expect(parsed.username).toBeUndefined();
-    expect(toStoredLead(parsed, "package", submittedAt)).toEqual({
-      source: "package",
+    expect(parsed.zipCode).toBeUndefined();
+    expect(toStoredLead(parsed, submittedAt)).toEqual({
+      source: "contact",
       name: "Jordan Rivera",
       email: "jordan@example.com",
       phone: "+1 555 555 0199",
       username: undefined,
-      preferredContactMethod: "email",
       companyName: "Rivera Roofing",
-      serviceArea: "Austin, TX",
-      selectedPackage: "growth-20",
-      bestContactTime: "Weekday afternoons",
-      notes: "Interested in suburban replacement work.",
+      zipCode: undefined,
+      requestedContactAt: "2026-08-15T14:00",
+      requestedContactTimezone: "America/Los_Angeles",
+      notes: "Interested in discussing storm repair opportunities.",
       consentTimestamp: submittedAt.toISOString(),
     });
   });

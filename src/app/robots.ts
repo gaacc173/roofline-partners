@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/get-started", "/thank-you"],
+      disallow: ["/thank-you"],
     },
     sitemap: `${NEXT_PUBLIC_APP_URL}/sitemap.xml`,
   };

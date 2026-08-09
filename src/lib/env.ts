@@ -22,13 +22,15 @@ export interface EnvSchema {
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
   LEAD_NOTIFICATION_EMAIL?: string;
+  GOOGLE_SHEETS_WEBHOOK_URL?: string;
+  GOOGLE_SHEETS_WEBHOOK_SECRET?: string;
   TURNSTILE_SECRET_KEY?: string;
   /** Feature flag for analytics */
   NEXT_PUBLIC_ANALYTICS_ENABLED?: string;
 }
 
 const defaults: EnvSchema = {
-  NEXT_PUBLIC_APP_NAME: "Roofline Partners",
+  NEXT_PUBLIC_APP_NAME: "LeadbyLead",
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
 };
 
@@ -51,6 +53,10 @@ export function validateEnv(): EnvSchema {
   if (process.env.RESEND_FROM_EMAIL) vars.RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
   if (process.env.LEAD_NOTIFICATION_EMAIL)
     vars.LEAD_NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL;
+  if (process.env.GOOGLE_SHEETS_WEBHOOK_URL)
+    vars.GOOGLE_SHEETS_WEBHOOK_URL = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  if (process.env.GOOGLE_SHEETS_WEBHOOK_SECRET)
+    vars.GOOGLE_SHEETS_WEBHOOK_SECRET = process.env.GOOGLE_SHEETS_WEBHOOK_SECRET;
   if (process.env.TURNSTILE_SECRET_KEY)
     vars.TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
   if (process.env.NEXT_PUBLIC_ANALYTICS_ENABLED)
@@ -79,6 +85,8 @@ export function getLeadIntegrationConfig() {
     resendApiKey: env.RESEND_API_KEY!,
     resendFromEmail: env.RESEND_FROM_EMAIL!,
     notificationEmail: env.LEAD_NOTIFICATION_EMAIL!,
+    googleSheetsWebhookUrl: env.GOOGLE_SHEETS_WEBHOOK_URL,
+    googleSheetsWebhookSecret: env.GOOGLE_SHEETS_WEBHOOK_SECRET,
   };
 }
 

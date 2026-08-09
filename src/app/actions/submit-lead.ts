@@ -5,10 +5,13 @@ import { redirect } from "next/navigation";
 import { getLeadIntegrationConfig } from "@/lib/env";
 import { LeadSubmissionService } from "@/features/leads/lead-service";
 import { SupabaseLeadRepository } from "@/features/leads/lead-repository";
-import { ResendLeadNotificationService } from "@/features/leads/notification-service";
-import { leadSources, leadSubmissionSchema, type LeadSource } from "@/features/leads/lead-schema";
+import {
+  FanOutLeadNotificationService,
+  GoogleSheetsLeadNotificationService,
+  ResendLeadNotificationService,
+} from "@/features/leads/notification-service";
+import { leadSubmissionSchema } from "@/features/leads/lead-schema";
 import { isRateLimited } from "@/features/leads/rate-limit";
-import { getPackageById } from "@/content/packages";
 
 export interface LeadFormState {
   error?: string;
@@ -38,11 +41,6 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
     return { error: "We could not verify this request. Please refresh the page and try again." };
   }
 
-  const source = getText(formData, "source") as LeadSource;
-  if (!leadSources.includes(source)) {
-    return { error: "Choose a valid request type and try again." };
-  }
-
   const forwardedFor = requestHeaders.get("x-forwarded-for");
   const requestId =
     forwardedFor?.split(",")[0]?.trim() || requestHeaders.get("x-real-ip") || "unknown";
@@ -55,11 +53,10 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
     email: getText(formData, "email"),
     phone: getText(formData, "phone"),
     username: getText(formData, "username"),
-    preferredContactMethod: getText(formData, "preferredContactMethod"),
     companyName: getText(formData, "companyName"),
-    serviceArea: getText(formData, "serviceArea"),
-    selectedPackage: getText(formData, "selectedPackage"),
-    bestContactTime: getText(formData, "bestContactTime"),
+    zipCode: getText(formData, "zipCode"),
+    requestedContactAt: getText(formData, "requestedContactAt"),
+    requestedContactTimezone: getText(formData, "requestedContactTimezone"),
     notes: getText(formData, "notes"),
     consent: formData.get("consent") === "on",
     website: getText(formData, "website"),
@@ -71,16 +68,6 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
       error: "Please correct the highlighted fields.",
       fieldErrors: parsed.error.flatten().fieldErrors,
     };
-  }
-
-  const selectedPackage = parsed.data.selectedPackage
-    ? getPackageById(parsed.data.selectedPackage)
-    : undefined;
-  if (
-    (source === "package" && (!selectedPackage || selectedPackage.id === "trial")) ||
-    (source === "trial" && selectedPackage?.id !== "trial")
-  ) {
-    return { error: "Choose a valid package before submitting your request." };
   }
 
   const submittedAt = Number(parsed.data.formStartedAt);
@@ -96,13 +83,23 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
     const config = getLeadIntegrationConfig();
     const service = new LeadSubmissionService(
       new SupabaseLeadRepository(config.supabaseUrl, config.supabaseServiceRoleKey),
-      new ResendLeadNotificationService(
-        config.resendApiKey,
-        config.resendFromEmail,
-        config.notificationEmail,
-      ),
+      new FanOutLeadNotificationService([
+        new ResendLeadNotificationService(
+          config.resendApiKey,
+          config.resendFromEmail,
+          config.notificationEmail,
+        ),
+        ...(config.googleSheetsWebhookUrl && config.googleSheetsWebhookSecret
+          ? [
+              new GoogleSheetsLeadNotificationService(
+                config.googleSheetsWebhookUrl,
+                config.googleSheetsWebhookSecret,
+              ),
+            ]
+          : []),
+      ]),
     );
-    await service.submit(parsed.data, source);
+    await service.submit(parsed.data);
   } catch (error) {
     console.error("Lead submission failed.", error);
     return {
@@ -111,5 +108,5 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
     };
   }
 
-  redirect(`/thank-you?source=${source}`);
+  redirect("/thank-you");
 }
