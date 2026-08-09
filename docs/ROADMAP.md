@@ -33,29 +33,29 @@
 - [x] Reusable UI components: Button, Container, Badge, SectionHeading, Card
 - [x] Shared Header with responsive nav, mobile menu, skip-to-content, CSS/SVG logo
 - [x] Shared Footer component
-- [x] Route shells: /packages, /how-it-works, /why-roofline, /faq, /contact, /get-started, /thank-you
-- [x] Content configuration module: site.ts, packages.ts, faqs.ts, trust.ts
+- [x] Route shells and legacy redirects
+- [x] Content configuration module: site.ts, marketing.ts, faqs.ts, trust.ts
 - [x] Analytics interface with named events
 - [x] Self-authored logo SVG and favicon strategy
 - [x] Updated documentation
-- [x] Review-driven hardening: tablet navigation, rendered header test, content boundary, and truthful sample pricing
+- [x] Review-driven hardening: tablet navigation, rendered header test, content boundaries, and meeting-first conversion flow
 
-### Milestone 4: Marketing Content Completion
+### Milestone 4: Meeting-first Marketing Completion
 
-- [x] Packages/pricing page (/packages)
-- [x] How it works, why Roofline, FAQ, and contact route shells
-- [x] Content/configuration modules for public copy and packages
-- [x] Complete premium homepage and shared conversion sections
-- [x] Contact page with lead form (/contact)
+- [x] Homepage-only scheduling flow
+- [x] How it works, why LeadbyLead, FAQ, and legacy redirects
+- [x] Content/configuration modules for meeting-first copy
+- [x] Exclusive appointment trust and appointment-type messaging
 - [ ] Verified testimonial/social-proof section once approved evidence is supplied
 - [x] JSON-LD: Organization + Service schemas
 
 ### Milestone 5: Lead Capture MVP
 
-- [x] Supabase `leads` migration (apply it to the configured project before launch)
+- [x] Supabase base and meeting-first lead migrations (apply both before launch)
 - [x] Server Action for lead submission
 - [x] Form validation and accessible server-error UX
-- [x] Resend email notification adapter
+- [x] Resend email notification adapter with timezone-aware request details
+- [x] Optional Google Sheets webhook payload with separate date/time and timezone fields
 - [x] Server Action and provider contract test coverage
 - [ ] Analytics event tracking for form submissions (typed seam exists; vendor intentionally deferred)
 - [x] Success/error UX for form

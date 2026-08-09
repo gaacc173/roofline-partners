@@ -1,19 +1,39 @@
 import { expect, test } from "playwright/test";
 
-test("package selection carries the requested package into qualification", async ({ page }) => {
-  await page.goto("/packages");
-  await page
-    .getByRole("link", { name: /request growth/i })
-    .first()
-    .click();
+test("homepage is the single scheduling conversion surface", async ({ page }) => {
+  await page.goto("/");
 
-  await expect(page).toHaveURL(/\/get-started\?package=growth-20/);
-  await expect(page.getByRole("heading", { name: /growth/i }).first()).toBeVisible();
-  await expect(page.locator('input[name="selectedPackage"]')).toHaveValue("growth-20");
-  await expect(page.getByRole("button", { name: /submit|request/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /start with zero risk/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /tell us about your zip code/i })).toBeVisible();
+  await expect(page.locator('input[name="requestedContactAt"]')).toHaveAttribute(
+    "type",
+    "datetime-local",
+  );
+  await expect(page.locator('input[name="requestedContactTimezone"]')).toHaveCount(1);
+  await expect(page.getByText(/no shared leads, no retainers/i)).toBeVisible();
+  await expect(
+    page.getByText(/storm repair, roof replacement, hail damage, and insurance jobs/i).first(),
+  ).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("Starter");
+  await expect(page.locator("body")).not.toContainText("Growth");
+  await expect(page.locator("body")).not.toContainText("Scale");
 });
 
-test("public SEO routes and health endpoint are available", async ({ page, request }) => {
+test("legacy package and contact destinations permanently redirect", async ({ request }) => {
+  const packages = await request.get("/packages", { maxRedirects: 0 });
+  expect(packages.status()).toBe(308);
+  expect(packages.headers().location).toBe("/");
+
+  const getStarted = await request.get("/get-started", { maxRedirects: 0 });
+  expect(getStarted.status()).toBe(308);
+  expect(getStarted.headers().location).toContain("/#schedule-a-call");
+
+  const contact = await request.get("/contact", { maxRedirects: 0 });
+  expect(contact.status()).toBe(308);
+  expect(contact.headers().location).toContain("/#schedule-a-call");
+});
+
+test("public SEO routes and health endpoint are available", async ({ request }) => {
   const health = await request.get("/api/health");
   expect(health.ok()).toBeTruthy();
   expect(await health.json()).toEqual({ status: "ok" });
@@ -24,8 +44,7 @@ test("public SEO routes and health endpoint are available", async ({ page, reque
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBeTruthy();
-  expect(await sitemap.text()).toMatch(/\/contact/);
-
-  await page.goto("/");
-  await expect(page.getByRole("heading", { name: /more qualified conversations/i })).toBeVisible();
+  const sitemapBody = await sitemap.text();
+  expect(sitemapBody).toMatch(/\/faq/);
+  expect(sitemapBody).not.toMatch(/\/packages|\/get-started|\/contact/);
 });

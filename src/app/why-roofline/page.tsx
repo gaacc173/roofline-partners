@@ -18,7 +18,7 @@ export default function WhyRooflinePage() {
       />
 
       {/* Trust signals */}
-      <div className="mb-16 grid grid-cols-2 gap-6 lg:grid-cols-4">
+      <div className="mb-16 grid grid-cols-2 gap-6 lg:grid-cols-3">
         {trustSignals.map((signal) => (
           <div
             key={signal.label}

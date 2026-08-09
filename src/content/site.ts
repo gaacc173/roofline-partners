@@ -1,40 +1,31 @@
-/**
- * Site-wide configuration.
- *
- * Central source of truth for brand name, tagline, nav links,
- * and footer information. Components import from here instead of
- * hard-coding copy.
- */
-
 export const site = {
-  name: "Roofline Partners",
-  tagline: "Qualified roofing appointments, built for contractors ready to grow.",
+  name: "LeadbyLead",
+  tagline: "Exclusive roofing appointments, built around a better conversation.",
   description:
-    "Roofline Partners connects roofing companies with qualified appointment opportunities through a clear, responsive onboarding process.",
-  email: "info@rooflinepartners.com",
+    "LeadbyLead helps roofing companies connect with exclusive homeowner appointments through a simple, human-first scheduling process.",
+  email: "hello@leadbylead.com",
   phone: "(555) 000-0000",
-  address: "Service area: Greater metropolitan region",
+  address: "Serving roofing companies across the United States",
   navLinks: [
     { label: "Home", href: "/" },
-    { label: "Packages", href: "/packages" },
     { label: "How It Works", href: "/how-it-works" },
-    { label: "Why Roofline", href: "/why-roofline" },
+    { label: "Why LeadbyLead", href: "/why-roofline" },
     { label: "FAQ", href: "/faq" },
-    { label: "Contact", href: "/contact" },
+    { label: "Schedule a Call", href: "/#schedule-a-call" },
   ] as const,
-  getStartedHref: "/get-started",
+  getStartedHref: "/#schedule-a-call",
   metadata: {
-    defaultTitle: "Roofing appointments for teams ready to grow",
+    defaultTitle: "Start with zero risk",
     description:
-      "Compare flexible roofing appointment packages or request a qualifying two-appointment trial from Roofline Partners.",
+      "LeadbyLead connects roofing companies with exclusive homeowner appointments. Tell us your ZIP code and schedule a conversation with our team.",
   },
   footer: {
-    copyright: `© ${new Date().getFullYear()} Roofline Partners. All rights reserved.`,
+    copyright: `© ${new Date().getFullYear()} LeadbyLead. All rights reserved.`,
     links: [
-      { label: "Packages", href: "/packages" },
       { label: "How It Works", href: "/how-it-works" },
+      { label: "Why LeadbyLead", href: "/why-roofline" },
       { label: "FAQ", href: "/faq" },
-      { label: "Contact", href: "/contact" },
+      { label: "Schedule a Call", href: "/#schedule-a-call" },
     ],
   },
 } as const;

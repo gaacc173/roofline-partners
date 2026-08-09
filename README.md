@@ -1,6 +1,6 @@
-# Roofline Partners
+# LeadbyLead
 
-Premium, qualification-first roofing appointment packages for contractor teams.
+Exclusive roofing appointments for contractor teams that want a simpler, lower-risk path to homeowner conversations.
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ Open [http://localhost:3000](http://localhost:3000).
 src/
   app/          # Next.js App Router pages and metadata assets
   components/   # Reusable layout, UI, and marketing sections
-  content/      # Typed, reviewable package and marketing copy
+  content/      # Typed, reviewable marketing and FAQ copy
   lib/          # Shared utilities (environment, analytics, lead helpers)
 docs/           # Architecture and project documentation
 public/         # Static assets (images, favicons, SVGs)

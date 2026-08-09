@@ -16,12 +16,12 @@ export function serviceJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Roofing appointment packages",
+    name: "Exclusive roofing appointments",
     description: site.metadata.description,
     provider: {
       "@type": "Organization",
       name: site.name,
     },
-    serviceType: "Roofing appointment generation",
+    serviceType: "Exclusive roofing appointment generation",
   };
 }

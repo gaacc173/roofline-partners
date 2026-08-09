@@ -1,7 +1,7 @@
-# Roofline Partners Design Specification
+# Roofline Partners Design Specification (Superseded)
 
 **Date**: 2026-07-28
-**Status**: Foundation
+**Status**: Superseded by ADR-016 (meeting-first model, 2026-08-09)
 **Author**: AI Agent (opencode)
 
 ## Brand Identity
@@ -31,11 +31,9 @@
 - Repair vs replacement guidance
 - Service area information
 
-### Packages (`/packages`)
+### Packages (`/packages`) — superseded
 
-- Tiered service packages (basic, standard, premium)
-- What's included in each tier
-- Call-to-action on each package
+- The former tiered model was removed. The route now permanently redirects to the homepage scheduling form.
 
 ### About (`/about`)
 
@@ -43,15 +41,15 @@
 - Team information
 - Certifications and warranties
 
-### Contact (`/contact`)
+### Contact (`/contact`) — superseded as a destination page
 
-- Lead capture form (name, email, phone, message)
+- The contact form is consolidated into the homepage scheduling form.
 - Business contact information
 - Service area map (future)
 
 ## Lead Capture Form
 
-### Fields
+### Fields (superseded)
 
 | Field   | Type     | Required | Validation            |
 | ------- | -------- | -------- | --------------------- |
@@ -126,14 +124,14 @@ Content (packages, testimonials, service descriptions) should be configurable wi
 
 Recommended approach for Milestone 3: JSON config files with a simple loader.
 
-## Analytics
+## Analytics (superseded)
 
 Events to track:
 
 - Page views (all routes)
 - Form submissions (success/failure)
 - CTA clicks (Consultation, Services)
-- Package views
+- Scheduling CTA clicks
 
 Implementation: Lightweight analytics event logger → future integration with analytics provider.
 

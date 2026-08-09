@@ -7,12 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 /**
- * Roofline Partners logo rendered as inline SVG + CSS.
+ * LeadbyLead logo rendered as inline SVG + CSS.
  * No external assets — self-authored.
  */
 function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2" aria-label="Roofline Partners home">
+    <Link href="/" className="flex items-center gap-2" aria-label="LeadbyLead home">
       <svg
         width="32"
         height="32"
@@ -138,7 +138,7 @@ export function Header() {
             href={site.getStartedHref}
             className="inline-flex h-9 items-center justify-center rounded-md bg-zinc-900 px-3 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
-            Get Started
+            Schedule a Call
           </Link>
         </div>
 
@@ -189,7 +189,7 @@ export function Header() {
                 className="inline-flex h-10 w-full items-center justify-center rounded-md bg-zinc-900 px-5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
                 onClick={() => setMobileOpen(false)}
               >
-                Get Started
+                Schedule a Call
               </Link>
             </div>
           </nav>

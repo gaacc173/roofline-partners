@@ -1,10 +1,3 @@
-/**
- * FAQ configuration.
- *
- * Frequently asked questions are stored here so components
- * can render them without hard-coded copy.
- */
-
 export interface FAQ {
   question: string;
   answer: string;
@@ -12,43 +5,36 @@ export interface FAQ {
 
 export const faqs: FAQ[] = [
   {
-    question: "What does Roofline Partners provide?",
+    question: "What does LeadbyLead provide?",
     answer:
-      "Roofline Partners is an appointment-generation service for roofing companies. We help qualified teams request an appointment package and complete onboarding with our team.",
+      "LeadbyLead helps roofing companies connect with exclusive homeowner appointments. We handle the sourcing and qualification work so your team can focus on the customer conversation.",
   },
   {
-    question: "Who is the free trial for?",
-    answer:
-      "The two-appointment trial is intended for qualifying roofing companies. We review service area, capacity, and basic company context before confirming availability.",
+    question: "What appointment types do you cover?",
+    answer: "We cover storm repair, roof replacement, hail damage, and insurance jobs.",
   },
   {
-    question: "Are package prices final?",
+    question: "Are appointments shared with other roofers?",
     answer:
-      "No. Any amount shown is an illustrative sample for planning. Final availability, package terms, and payment are confirmed by our team after qualification.",
+      "No. We work toward one roofer per ZIP code, and a homeowner is never resold to a competing roofing company in your territory.",
   },
   {
-    question: "Is payment collected on this website?",
+    question: "How does pricing work?",
     answer:
-      "No. Roofline Partners does not collect payment through this MVP website. A team member discusses final terms and payment after reviewing your request.",
+      "There is no fixed public package price. Appointments are priced individually, and we discuss pricing and terms on your call based on your market and needs.",
   },
   {
-    question: "What information do you need from my company?",
-    answer:
-      "We ask for your contact details, company name, service area, preferred contact method, selected package, and any context that helps us review fit.",
+    question: "What happens if a homeowner cancels or does not show?",
+    answer: "We review cancellations and no-shows case by case and work with you to make it right.",
   },
   {
-    question: "How will your team contact me?",
+    question: "What do you need from my company?",
     answer:
-      "You can choose WhatsApp, Telegram, email, or SMS in the qualification form. We use that preference when following up where possible.",
+      "Start with your name, company, contact details, ZIP code if you have one in mind, and a short message. We will cover the rest on the call.",
   },
   {
-    question: "Can I request a package for more than one service area?",
+    question: "What happens after I submit the form?",
     answer:
-      "Yes. Include the relevant areas in your request notes. Our team will discuss coverage and capacity during onboarding.",
-  },
-  {
-    question: "What happens after I submit a request?",
-    answer:
-      "Your request is reviewed by the Roofline Partners team. We follow up to confirm fit, availability, and the next step before any paid fulfillment begins.",
+      "We review your request and respond within 24 hours using the contact details you provided. The next step is a conversation about your territory, appointment needs, pricing, and terms.",
   },
 ] as const;

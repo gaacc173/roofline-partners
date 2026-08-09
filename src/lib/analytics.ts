@@ -11,8 +11,7 @@
 /** Typed event names */
 export const AnalyticsEvent = {
   HOMEPAGE_VIEW: "homepage_view",
-  PACKAGE_VIEW: "package_view",
-  PACKAGE_SELECTED: "package_selected",
+  SCHEDULE_CALL_CLICKED: "schedule_call_clicked",
   FORM_STARTED: "form_started",
   FORM_COMPLETED: "form_completed",
   FREE_TRIAL_REQUESTED: "free_trial_requested",

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Roofline Partners is a premium roofing company website built with **Next.js App Router**. The application serves as a marketing site with secure lead capture as its MVP feature set.
+LeadbyLead is a meeting-first roofing appointment website built with the Next.js App Router. The public experience is intentionally simple: the homepage explains the model and contains the only conversion form, which schedules a conversation rather than selecting or purchasing a package.
 
 ## Technology Stack
 
@@ -17,80 +17,53 @@ Roofline Partners is a premium roofing company website built with **Next.js App 
 | Target Deployment | Vercel                                          |
 | Database          | Supabase PostgreSQL                             |
 | Email             | Resend                                          |
+| Optional export   | Google Apps Script → Google Sheets              |
 
 ## Directory Structure
 
 ```
 src/
   app/
-    api/health/   # Cache-disabled deployment liveness endpoint
-    layout.tsx    # Root layout with metadata (SEO, OG tags)
-    page.tsx      # Config-driven premium home page
-    globals.css   # Tailwind imports, CSS variables
+    api/health/    # Cache-disabled deployment liveness endpoint
+    actions/       # Server Action for the homepage scheduling form
+    layout.tsx     # Root layout with metadata and structured data
+    page.tsx       # Homepage-only marketing and conversion flow
+    globals.css    # Tailwind imports, tokens, motion, and scroll behavior
   components/
-    marketing/    # Appointment-flow and package presentation components
-    layout/       # Shared navigation and footer
-    ui/           # Reusable design-system primitives
-  content/        # Typed marketing, package, FAQ, and site configuration
-  lib/
-    env.ts        # Typed environment validation
-    lead-utils.ts # Lead data sanitisation & validation
-docs/             # Architecture and project documentation
-public/           # Static assets
-```
+    forms/         # Single scheduling form
+    marketing/     # Appointment-flow visual
+    layout/        # Shared navigation and footer
+    ui/            # Reusable design-system primitives
+  content/         # Typed marketing, FAQ, trust, and site configuration
+  features/leads/  # Schema, service, provider adapters, and tests
+  lib/             # Environment, analytics, SEO, and shared utilities
 
 ## Data Flow
 
 ```
-User → Browser → Next.js App Router → Server Components
-                                    → Server Action (lead submission)
-                                    → Supabase PostgreSQL
-                                    → Resend notification
-```
 
-### Current State (Shared Marketing Shell)
-
-- **Marketing experience** — homepage, packages, process, differentiation, FAQ, contact, and a query-aware package selection route render through a shared config-driven design system
-- **Environment resolution** — public site values have safe local defaults; `validateProductionEnvironment()` is reserved for release/deployment validation so contributors can run the shell without secrets
-- **Lead utilities** — pure functions for sanitising and validating lead data used by the server action
-- **Lead pipeline** — qualification and contact forms submit through a same-origin Server Action, persist through a `LeadRepository`, and notify through a `LeadNotificationService`
-
-### Operational Verification
-
-- `GET /api/health` provides a minimal liveness signal for Vercel checks and external uptime monitors.
-- Playwright smoke tests cover package-to-qualification navigation, the selected package contract, public SEO routes, and the health endpoint.
-- The health endpoint intentionally does not perform provider calls, so monitoring cannot create leads or incur notification/database traffic.
-
-### Lead Pipeline (MVP)
+Visitor → Homepage scheduling form → same-origin Server Action
+→ Zod validation + abuse controls
+→ Supabase contact lead
+→ Resend internal notification
+→ /thank-you
 
 ```
-Lead Form (Client) → Server Action → sanitiseLead() → isLeadValid()
-                    → Supabase INSERT into leads table
-                    → Resend email notification
-                    → Analytics event
+
+The form captures the visitor-selected local date/time and the browser-detected IANA timezone as separate fields. This preserves timezone context for the team without asking visitors to calculate conversions.
+
+## Product Model
+
+- No published package tiers, fixed prices, package IDs, or online purchase flow exist.
+- `/packages`, `/get-started`, and `/contact` are retained only as permanent redirects for old links; the homepage is the sole conversion surface.
+- Appointment types covered: storm repair, roof replacement, hail damage, and insurance jobs.
+- Pricing, volume, territory, and commercial terms are discussed on the call.
+
+## Security and Operations
+
+- Server-only Supabase service-role and Resend credentials.
+- Same-origin verification, honeypot, timing gate, Zod validation, and process-local rate-limit safety net.
+- RLS remains enabled; the meeting-first migration removes old package/contact-method columns and adds scheduling fields.
+- `GET /api/health` is a liveness-only endpoint.
+- See [OPERATIONS.md](./OPERATIONS.md) for launch, smoke testing, monitoring, and rollback.
 ```
-
-## Key Design Decisions
-
-1. **App Router only** — no Pages Router; all routes under `src/app/`
-2. **Server Components by default** — client components only where interactivity is needed
-3. **Pure utility layer** — `src/lib/` contains framework-agnostic helpers
-4. **Provider contracts** — Supabase and Resend are server-only adapters behind lead service interfaces
-5. **No payments in v1** — manual fulfillment workflow only
-
-## SEO Configuration
-
-- `Metadata` object in `layout.tsx` defines title, description, open graph, and Twitter card
-- Generated Open Graph image via `src/app/opengraph-image.tsx` uses only self-authored visual design
-- `robots.ts` allows public marketing routes but excludes qualification and thank-you routes; `sitemap.ts` lists indexable routes
-- JSON-LD for **Organization** and **Service** schema is emitted from typed configuration
-- `src/app/icon.svg` provides the self-authored App Router favicon
-
-## Security Model
-
-- Public environment values resolved through `src/lib/env.ts`; production URL validation is run as part of deployment hardening
-- Lead data sanitised via `stripHtml()` before storage
-- No client-side secrets; all sensitive operations server-side
-- CSP and browser security headers managed in `next.config.ts`
-
-See [docs/SECURITY.md](./SECURITY.md) for the full security document.

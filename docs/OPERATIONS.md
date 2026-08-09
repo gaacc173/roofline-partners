@@ -1,6 +1,6 @@
 # Production Operations Runbook
 
-This runbook is the operational source of truth for deploying and maintaining Roofline Partners. The application is deployed through Vercel, stores leads in Supabase, and sends internal notifications through Resend.
+This runbook is the operational source of truth for deploying and maintaining LeadbyLead. The application is deployed through Vercel, stores contact requests in Supabase, and sends internal notifications through Resend.
 
 ## What CI Does
 
@@ -29,18 +29,20 @@ Required for real lead submissions:
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
 - `LEAD_NOTIFICATION_EMAIL`
+- Optional `GOOGLE_SHEETS_WEBHOOK_URL` and `GOOGLE_SHEETS_WEBHOOK_SECRET` when the Sheets receiver is enabled
 
 Never expose service-role, Resend, or Turnstile secrets through `NEXT_PUBLIC_` variables.
 
 ## Initial Production Launch Checklist
 
-- [ ] Confirm the final business name, email, phone, service area, package quantities, and sample pricing in `src/content/`.
+- [ ] Confirm the final business name, email, phone, service area, and appointment-type copy in `src/content/`.
 - [ ] Add the final production domain to Vercel and confirm HTTPS is active.
 - [ ] Set `NEXT_PUBLIC_APP_URL` to the exact final HTTPS origin, without a trailing path.
 - [ ] Create the production Supabase project.
-- [ ] Apply `supabase/migrations/202607280001_create_leads.sql`.
+- [ ] Apply `supabase/migrations/202607280001_create_leads.sql` and `supabase/migrations/202607290002_meeting_first_leads.sql`.
 - [ ] Verify the `leads` table exists, RLS is enabled, and no public table policy permits anonymous access.
 - [ ] Verify the Resend sender domain, including the provider-requested SPF/DKIM DNS records.
+- [ ] If Sheets is enabled, deploy `google-apps-script/Code.gs`, set its `WEBHOOK_SECRET` Script Property, and confirm the sheet header row.
 - [ ] Configure the production Supabase and Resend environment variables in Vercel.
 - [ ] Enable edge rate limiting for the lead submission surface through Vercel Firewall, Cloudflare, or an equivalent distributed control.
 - [ ] Deploy a Preview and complete the controlled smoke test below.
@@ -55,10 +57,10 @@ The application-level limiter allows five submissions per 15-minute window per d
 
 The Playwright suite deliberately does **not** submit a real lead. Provider-backed verification must be performed manually in Preview or Production:
 
-1. Open `/get-started?package=trial` or `/contact`.
+1. Open the homepage and use the scheduling form immediately after the hero.
 2. Submit a controlled request using an approved internal test address and clearly identifiable test notes.
 3. Confirm the request completes at `/thank-you`.
-4. Confirm exactly one new row appears in Supabase with the expected source/package and normalized email.
+4. Confirm exactly one new row appears in Supabase with `source=contact`, normalized email, requested local date/time, and browser IANA timezone.
 5. Confirm the internal Resend notification arrives at `LEAD_NOTIFICATION_EMAIL`.
 6. Remove or label the test row according to the team’s data-retention procedure.
 7. Confirm `GET /api/health` returns HTTP 200 and `{ "status": "ok" }`.

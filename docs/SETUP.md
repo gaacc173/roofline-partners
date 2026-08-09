@@ -23,7 +23,7 @@ cp .env.example .env.local
 Edit `.env.local` with your values. At minimum:
 
 ```env
-NEXT_PUBLIC_APP_NAME="Roofline Partners"
+NEXT_PUBLIC_APP_NAME="LeadbyLead"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
@@ -36,7 +36,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 # Resend (server-only)
 RESEND_API_KEY=
-RESEND_FROM_EMAIL="Roofline Partners <leads@yourdomain.com>"
+RESEND_FROM_EMAIL="LeadbyLead <leads@yourdomain.com>"
 LEAD_NOTIFICATION_EMAIL="owner@yourdomain.com"
 
 # Analytics (Milestone 4)
@@ -79,7 +79,7 @@ Tests are located alongside source files (`*.test.ts` and `*.test.tsx`). The lea
 
 ### Browser Smoke Tests
 
-Playwright covers the highest-value public paths: package selection into the qualification form, the liveness endpoint, and robots/sitemap responses. Install the Chromium browser once on a new machine:
+Playwright covers the highest-value public paths: homepage scheduling, legacy redirects, the liveness endpoint, and robots/sitemap responses. Install the Chromium browser once on a new machine:
 
 ```bash
 npx playwright install chromium
@@ -138,7 +138,7 @@ PORT=3001 npm run dev
 
 Follow the complete [Production Operations Runbook](./OPERATIONS.md). At a high level:
 
-1. Create a Supabase project, apply `supabase/migrations/202607280001_create_leads.sql`, and verify RLS/no public policies.
+1. Create a Supabase project, apply `supabase/migrations/202607280001_create_leads.sql` and `supabase/migrations/202607290002_meeting_first_leads.sql`, and verify RLS/no public policies.
 2. Verify the Resend sender domain and required SPF/DKIM records.
 3. Add the custom domain to Vercel and set environment variables separately for Preview and Production.
 4. Enable distributed edge rate limiting before exposing the lead form.

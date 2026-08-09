@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document covers the security posture, practices, and considerations for the Roofline Partners application.
+This document covers the security posture, practices, and considerations for the LeadbyLead application.
 
 ## Environment Variables
 
@@ -41,7 +41,7 @@ The in-process limiter allows five submissions per 15-minute window per derived 
 
 ### Dependency Maintenance
 
-The lockfile pins compatible patched `postcss` and `sharp` versions through npm `overrides` while the application remains on the tested Next.js `16.2.12` release. `npm audit --omit=dev` is clean after installation. Keep the overrides until the direct Next.js dependency adopts equivalent versions, then remove them in a dedicated tested maintenance change. Do not run `npm audit fix --force`; it proposes an unsafe downgrade to Next.js 9 for this App Router project.
+The lockfile pins compatible patched `nanoid`, `postcss`, and `sharp` versions through npm `overrides` while the application remains on the tested Next.js `16.2.12` release. `npm audit --omit=dev` is clean after installation. Keep the overrides until the direct framework dependencies adopt equivalent versions, then remove them in a dedicated tested maintenance change. Do not run `npm audit fix --force`; it proposes unsafe framework downgrades for this App Router project.
 
 The full audit also reports a high-severity advisory in the ESLint 9 development-only dependency graph (`minimatch`/`brace-expansion`). A newer `brace-expansion` override was tested and rejected because it breaks ESLint 9's expected module API. Track the compatible ESLint/Next lint-stack upgrade separately; it is not shipped to the production runtime.
 
@@ -56,7 +56,7 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 ## Operational Checks
 
 - `GET /api/health` returns `{ "status": "ok" }` with `Cache-Control: no-store` and performs no provider calls.
-- Playwright browser smoke tests run against a local development server and cover the primary package-selection and SEO paths.
+- Playwright browser smoke tests run against a local development server and cover the primary scheduling, redirect, and SEO paths.
 
 ## Supabase Security
 
@@ -70,6 +70,12 @@ The full audit also reports a high-severity advisory in the ESLint 9 development
 - API key stored in server-side environment only
 - Email templates use server-side rendering
 - No user data included in email subjects or preview text
+
+## Google Sheets Security
+
+- The optional Apps Script receiver accepts writes only when its shared webhook secret matches.
+- The webhook URL and secret are server-only environment variables.
+- The sheet stores the visitor-selected local date/time and IANA timezone separately; it does not store package or pricing fields.
 
 ## Vercel Security
 

@@ -3,7 +3,7 @@ import { Container } from "@/components/ui";
 
 export const metadata = {
   title: "Request received",
-  description: "Roofline Partners has received your request.",
+  description: "LeadbyLead has received your scheduling request.",
 };
 
 export default function ThankYouPage() {
@@ -21,9 +21,8 @@ export default function ThankYouPage() {
             Thank you for sharing your details.
           </h1>
           <p className="mt-5 text-base leading-7 text-slate-600 dark:text-slate-300">
-            A Roofline Partners team member will review your request and follow up using your
-            preferred contact method. Package availability, final terms, and payment are confirmed
-            separately.
+            A LeadbyLead team member will review your request and follow up within 24 hours. We will
+            discuss your territory, appointment needs, pricing, and terms on the call.
           </p>
           <Link
             href="/"

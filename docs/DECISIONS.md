@@ -93,12 +93,24 @@
 - **Status**: Accepted
 - **Date**: 2026-07-28
 - **Context**: Marketing copy and structured data (packages, FAQs, trust signals) should not be hardcoded in components. Components should be reusable and driven by data.
-- **Decision**: Create a `src/content/` module with typed configuration files (`site.ts`, `packages.ts`, `faqs.ts`, `trust.ts`) that export plain data objects consumed by components.
+- **Decision**: Create a `src/content/` module with typed configuration files (`site.ts`, `marketing.ts`, `faqs.ts`, `trust.ts`) that export plain data objects consumed by components.
 - **Consequences**:
   - Components receive data as props, making them testable and reusable
   - Content changes do not require component changes
   - Proof-placeholder content is clearly labeled and separate from real copy
   - Future CMS integration can replace these files with API calls transparently
+
+## ADR-016: Meeting-first commercial model
+
+- **Status**: Accepted; supersedes the published package/pricing model from the original design and marketing-page milestones.
+- **Date**: 2026-08-09
+- **Context**: Published Starter/Growth/Scale tiers and sample prices created unnecessary commercial framing before a roofing company had spoken with the team. The product direction is now a single, simple conversation: territory and appointment needs first, pricing and terms on the call.
+- **Decision**: Remove package cards, package IDs, fixed pricing, package selection, and package analytics from the active application. Keep `/packages`, `/get-started`, and `/contact` as permanent redirects for legacy links. Make the homepage the only conversion surface with a scheduling form.
+- **Consequences**:
+  - Pricing, volume, and terms are discussed individually rather than published.
+  - The lead contract stores optional ZIP code, requested local date/time, and browser IANA timezone instead of package/contact-method fields.
+  - The Supabase meeting-first migration removes obsolete columns while retaining an additive migration history.
+  - Historical ADRs and design specifications remain as superseded records; active architecture and content must follow this ADR.
 
 ## ADR-012: Analytics Interface (No Vendor Lock-in)
 
@@ -129,7 +141,7 @@
 - **Status**: Accepted
 - **Date**: 2026-07-29
 - **Context**: The tested Next.js 16.2.12 release declares vulnerable transitive `postcss` and `sharp` ranges, while npm's automatic remediation proposes an incompatible Next.js 9 downgrade.
-- **Decision**: Pin compatible patched `postcss` and `sharp` versions with npm `overrides`, then verify the resulting tree, build, and audit output. Re-evaluate and remove the overrides when the direct framework dependency includes equivalent patches.
+- **Decision**: Pin compatible patched `nanoid`, `postcss`, and `sharp` versions with npm `overrides`, then verify the resulting tree, build, and audit output. Re-evaluate and remove the overrides when direct framework dependencies include equivalent patches.
 - **Consequences**:
   - `npm audit --omit=dev` is clean without a framework downgrade.
   - Dependency upgrades must re-run install, `npm ls`, audit, tests, and build because the override changes framework transitive dependencies.

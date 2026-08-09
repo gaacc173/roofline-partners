@@ -1,52 +1,48 @@
-/**
- * Public marketing copy is deliberately centralized so factual claims can be
- * reviewed and updated without changing presentation components.
- */
-
 export const homeContent = {
-  eyebrow: "Roofing appointment packages",
-  title: "More qualified conversations. A clearer path to growth.",
+  eyebrow: "A better way to grow your roofing business",
+  title: "Start With Zero Risk",
+  subheading: "Our promise to roofers",
   description:
-    "Roofline Partners helps roofing teams start with a practical appointment package, clear expectations, and a responsive onboarding conversation.",
-  primaryCta: "Request 2 trial appointments",
-  secondaryCta: "Compare packages",
-  flowLabels: ["Choose a package", "Tell us about your coverage", "Confirm fit with our team"],
-  proofPoints: [
-    "Choose a package that fits your coverage",
-    "Share your service area before onboarding",
-    "Work with a team that follows up personally",
+    "We built LeadbyLead to fix what every contractor hates about lead vendors. We only win when you do.",
+  primaryCta: "Schedule a call",
+  secondaryCta: "See how it works",
+  flowLabels: [
+    "Share your ZIP code",
+    "We handle the qualification",
+    "Talk with the actual homeowner",
   ],
-  preview: {
-    eyebrow: "Choose your starting point",
-    title: "Flexible packages for focused roofing teams",
-    description:
-      "Start with the complimentary trial or compare appointment quantities before you submit a no-obligation qualification request.",
-  },
+  proofPoints: [
+    "No shared leads, no retainers",
+    "One roofer per ZIP — never shared",
+    "No-shows reviewed and made right",
+  ],
+  appointmentTypes: "We cover storm repair, roof replacement, hail damage, and insurance jobs.",
   quality: {
-    eyebrow: "A better-fit starting point",
-    title: "Built to turn intent into a useful first conversation.",
+    eyebrow: "Built for roofing teams",
+    title: "You bring the ZIP code. We handle the rest.",
     description:
-      "We ask for the details that help a real team assess fit before any package is confirmed.",
+      "LeadbyLead manages the sourcing and qualification work so you can focus on the homeowner conversation and the work your team does best.",
     items: [
       {
-        title: "Service-area context",
-        description: "Share where your team can realistically take on roofing work.",
+        title: "Tell us where you work",
+        description: "Share a ZIP code and the areas your team can serve.",
       },
       {
-        title: "Preferred follow-up",
-        description: "Choose the channel and time that make it easier to connect.",
+        title: "We do the groundwork",
+        description: "We handle the lead-sourcing and qualification work behind the scenes.",
       },
       {
-        title: "Capacity-aware packages",
-        description: "Start with a quantity that matches your current sales capacity.",
+        title: "You meet the homeowner",
+        description:
+          "Your team only deals with the real customer and the opportunity in front of you.",
       },
     ],
   },
   riskReversal: {
-    title: "No card details. No automatic charge. No pressure to continue.",
+    title: "Appointments are priced individually — we will cover pricing and terms on your call.",
     description:
-      "This MVP uses a qualification-first process. A Roofline Partners team member confirms service-area fit, availability, final terms, and payment separately before paid fulfillment begins.",
-    cta: "See how onboarding works",
+      "Have a high-volume need? Mention it in your message — we will cover pricing and terms on your call. No card details or automatic charge are required here.",
+    cta: "Schedule a call",
   },
   faqPreview: {
     eyebrow: "Questions, answered",
@@ -59,116 +55,88 @@ export const processContent = {
   metadata: {
     title: "How it works",
     description:
-      "See how to request a Roofline Partners appointment package and what happens next.",
+      "See how LeadbyLead turns a ZIP code into a straightforward homeowner conversation.",
   },
-  eyebrow: "A clear onboarding path",
-  title: "How it works",
-  description: "A straightforward path from package selection to a conversation with our team.",
+  eyebrow: "Keep it simple",
+  title: "You give us a ZIP code. We handle the rest.",
+  description:
+    "No lead lists to sort and no qualification work for your team. Just a clear path to the homeowner.",
   steps: [
     {
       number: "01",
-      title: "Compare packages",
-      description:
-        "Review appointment quantities, sample pricing, and the trial option at your own pace.",
+      title: "Share your ZIP code",
+      description: "Tell us where your roofing team wants to work and when you would like to talk.",
     },
     {
       number: "02",
-      title: "Tell us about your coverage",
-      description:
-        "Share the service areas, company context, and contact preferences that matter to your team.",
+      title: "We handle the groundwork",
+      description: "LeadbyLead sources and qualifies the opportunity before it reaches your team.",
     },
     {
       number: "03",
-      title: "We review your request",
+      title: "Talk with the homeowner",
       description:
-        "Our team confirms whether the requested package is a fit and follows up using your preferred method.",
-    },
-    {
-      number: "04",
-      title: "Confirm and get started",
-      description:
-        "You review availability, final terms, and next steps with a person before any paid fulfillment begins.",
+        "You deal with the actual customer, not lead-sourcing or qualification busywork.",
     },
   ],
 } as const;
 
 export const whyRooflineContent = {
   metadata: {
-    title: "Why Roofline",
-    description: "Learn what Roofline Partners is designed to make simpler for roofing teams.",
+    title: "Why LeadbyLead",
+    description: "Learn what LeadbyLead is designed to make simpler for roofing teams.",
   },
-  eyebrow: "Built around better conversations",
-  title: "Why Roofline Partners",
+  eyebrow: "Built around trust",
+  title: "Why LeadbyLead",
   description:
-    "A practical appointment-first process designed to give roofing teams more clarity before they commit.",
+    "A simpler appointment model for roofing teams that want honest conversations instead of complicated lead packages.",
   reasons: [
     {
-      title: "Appointment-first approach",
+      title: "No shared leads, no retainers",
       description:
-        "The focus is a scheduled opportunity for a real conversation, not an unfiltered contact list.",
+        "Appointments are exclusive, and there is no monthly retainer attached to the relationship.",
     },
     {
-      title: "Clear qualification context",
+      title: "One roofer per ZIP — never shared",
       description:
-        "Your request captures service area, contact preferences, and business context before onboarding begins.",
+        "Territory is locked to you. Homeowners are never resold to a competing roofing company.",
     },
     {
-      title: "Packages you can compare",
+      title: "No-shows reviewed and made right",
       description:
-        "Appointment quantities and sample pricing are presented plainly, so your team can choose an appropriate starting point.",
+        "If a homeowner cancels or does not show, we review it case by case and work with you to make it right.",
     },
     {
-      title: "Human follow-up",
+      title: "You only meet the homeowner",
       description:
-        "A team member reviews requests and confirms next steps instead of leaving you to navigate an automated purchase flow.",
+        "We take care of the sourcing and qualification work so your team can focus on service and sales.",
     },
     {
-      title: "Trial before commitment",
+      title: "Pricing discussed on the call",
       description:
-        "Eligible companies can request two trial appointments before deciding whether a paid package makes sense.",
+        "Every roofing business is different. We discuss pricing, terms, and volume around your actual needs.",
     },
     {
-      title: "Built to grow with you",
+      title: "Built for real roofing work",
       description:
-        "The starting flow supports future reporting, CRM connections, and additional home-service categories without adding friction today.",
+        "Storm repair, roof replacement, hail damage, and insurance jobs are all part of the conversation.",
     },
   ],
 } as const;
 
 export const contactContent = {
   metadata: {
-    title: "Contact",
-    description: "Contact Roofline Partners to ask a question or discuss appointment packages.",
-  },
-  eyebrow: "Talk with our team",
-  title: "Start with a conversation",
-  description:
-    "Have a question before choosing a package? Send your details and we will follow up through your preferred contact method.",
-  formTitle: "Tell us a little about your team",
-  formDescription: "We use this context to route your inquiry and prepare a useful follow-up.",
-  submitLabel: "Send my inquiry",
-  phoneLabel: "Call",
-} as const;
-
-export const getStartedContent = {
-  metadata: {
-    title: "Get started",
+    title: "Schedule a call",
     description:
-      "Choose a Roofline Partners appointment package and prepare your qualification request.",
+      "Tell LeadbyLead where you work and schedule a conversation about exclusive roofing appointments.",
   },
-  eyebrow: "Choose your package",
-  title: "Start with the appointment volume that fits your team.",
+  eyebrow: "Let us make this simple",
+  title: "Tell Us About Your ZIP Code",
   description:
-    "Select an option below. The secure qualification form is the next step and will confirm your service area, capacity, and preferred contact method.",
-  unknownSelection: "Choose a package to begin your qualification request.",
-  selectedLabel: "Selected package",
-  nextStepTitle: "What happens next",
-  nextStepDescription:
-    "You will complete a short qualification form. A Roofline Partners team member then reviews fit before confirming availability, final terms, or payment.",
-  contactCta: "Ask a question first",
-  packageCta: "Compare all packages",
-  formTitle: "Complete your qualification request",
+    "Share a little context and choose a time that works for a conversation. We will respond within 24 hours.",
+  formTitle: "Schedule a conversation",
   formDescription:
-    "Share a few details so our team can review fit before confirming availability or final terms.",
-  submitLabel: "Submit qualification request",
+    "No packages to compare and no payment details here — just a straightforward first call.",
+  submitLabel: "Schedule my call",
+  phoneLabel: "Call",
 } as const;

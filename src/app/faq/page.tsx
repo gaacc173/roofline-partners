@@ -5,7 +5,7 @@ import { FAQItem } from "./faq-item";
 export const metadata = {
   title: "FAQ",
   description:
-    "Frequently asked questions about Roofline Partners appointment packages and onboarding.",
+    "Frequently asked questions about LeadbyLead exclusive roofing appointments and scheduling.",
 };
 
 export default function FAQPage() {
