@@ -5,10 +5,14 @@ test("homepage is the single scheduling conversion surface", async ({ page }) =>
 
   await expect(page.getByRole("heading", { name: /start with zero risk/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /tell us about your zip code/i })).toBeVisible();
-  await expect(page.locator('input[name="requestedContactAt"]')).toHaveAttribute(
-    "type",
-    "datetime-local",
-  );
+  // The datetime-local input is replaced by accessible month/day/hour/minute/AM-PM selectors
+  await expect(page.locator('input[type="datetime-local"]')).toHaveCount(0);
+  await expect(page.getByRole("combobox", { name: /month/i })).toBeVisible();
+  await expect(page.getByRole("spinbutton", { name: /day/i })).toBeVisible();
+  await expect(page.getByRole("spinbutton", { name: /hour/i })).toBeVisible();
+  await expect(page.getByRole("spinbutton", { name: /minute/i })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "AM" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "PM" })).toBeVisible();
   await expect(page.locator('input[name="requestedContactTimezone"]')).toHaveCount(1);
   await expect(page.getByText(/no shared leads, no retainers/i)).toBeVisible();
   await expect(
@@ -17,6 +21,17 @@ test("homepage is the single scheduling conversion surface", async ({ page }) =>
   await expect(page.locator("body")).not.toContainText("Starter");
   await expect(page.locator("body")).not.toContainText("Growth");
   await expect(page.locator("body")).not.toContainText("Scale");
+});
+
+test("date and time controls remain usable on a small viewport", async ({ page }) => {
+  await page.goto("/");
+  const form = page.getByRole("form", { name: "Schedule a call form" });
+
+  await expect(form.getByRole("combobox", { name: /month/i })).toBeVisible();
+  await expect(form.getByRole("spinbutton", { name: /day/i })).toBeVisible();
+  await expect(form.getByRole("radio", { name: "AM" })).toBeVisible();
+  await expect(form.getByRole("radio", { name: "PM" })).toBeVisible();
+  await expect(form.getByRole("radio", { name: "AM" })).toHaveCSS("min-height", "44px");
 });
 
 test("legacy package and contact destinations permanently redirect", async ({ request }) => {

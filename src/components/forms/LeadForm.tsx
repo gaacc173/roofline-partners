@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { submitLead, type LeadFormState } from "@/app/actions/submit-lead";
+import { computeRequestedContactAt, daysInMonth } from "@/lib/contact-time";
 
 const initialState: LeadFormState = {};
 
@@ -16,8 +17,23 @@ function FieldError({ id, errors }: { id: string; errors?: string[] }) {
 export function LeadForm({ submitLabel }: { submitLabel: string }) {
   const [state, formAction, pending] = useActionState(submitLead, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const requestedContactTimezoneRef = useRef<HTMLInputElement>(null);
   const startFieldRef = useRef<HTMLInputElement>(null);
-  const timezoneFieldRef = useRef<HTMLInputElement>(null);
+  const [dateState, setDateState] = useState<{
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    ampm: string;
+    timezone: string;
+  }>({
+    month: new Date().getMonth() + 1,
+    day: new Date().getDate(),
+    hour: new Date().getHours() % 12 || 12,
+    minute: new Date().getMinutes(),
+    ampm: new Date().getHours() >= 12 ? "PM" : "AM",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
 
   useEffect(() => {
     if (!state.error) return;
@@ -32,6 +48,69 @@ export function LeadForm({ submitLabel }: { submitLabel: string }) {
   const fieldClassName =
     "mt-2 w-full rounded-xl border border-slate-400 bg-white px-3 py-3 text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-2 focus:ring-slate-950/15 aria-[invalid=true]:border-red-600 aria-[invalid=true]:focus:ring-red-600/15 dark:border-slate-500 dark:bg-slate-950 dark:text-white dark:focus:border-white";
 
+  const updateDate = (partial: Partial<typeof dateState>) => {
+    setDateState((prev) => ({
+      ...prev,
+      ...partial,
+    }));
+  };
+
+  const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const now = new Date();
+    const selectedYear =
+      dateState.month < now.getMonth() + 1 ||
+      (dateState.month === now.getMonth() + 1 && dateState.day < now.getDate())
+        ? now.getFullYear() + 1
+        : now.getFullYear();
+    const val = Math.max(
+      1,
+      Math.min(daysInMonth(selectedYear, dateState.month), parseInt(e.target.value) || 1),
+    );
+    updateDate({ day: val });
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = parseInt(e.target.value);
+    const now = new Date();
+    const selectedYear =
+      val < now.getMonth() + 1 || (val === now.getMonth() + 1 && dateState.day < now.getDate())
+        ? now.getFullYear() + 1
+        : now.getFullYear();
+    updateDate({ month: val, day: Math.min(dateState.day, daysInMonth(selectedYear, val)) });
+  };
+
+  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = parseInt(e.target.value);
+    if (isNaN(val)) val = 12;
+    val = Math.max(1, Math.min(12, val));
+    updateDate({ hour: val });
+  };
+
+  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = parseInt(e.target.value);
+    if (isNaN(val)) val = 0;
+    val = Math.max(0, Math.min(59, val));
+    updateDate({ minute: val });
+  };
+
+  const handleAMPMChange = (ampm: string) => {
+    updateDate({ ampm });
+  };
+
+  const handleFormSubmit = () => {
+    if (requestedContactTimezoneRef.current) {
+      requestedContactTimezoneRef.current.value = dateState.timezone;
+    }
+  };
+
+  const requestedContactAt = computeRequestedContactAt({
+    month: dateState.month,
+    day: dateState.day,
+    hour: dateState.hour,
+    minute: dateState.minute,
+    ampm: dateState.ampm as "AM" | "PM",
+  });
+
   return (
     <form
       ref={formRef}
@@ -44,14 +123,16 @@ export function LeadForm({ submitLabel }: { submitLabel: string }) {
           startFieldRef.current.value = String(Date.now());
         }
       }}
-      onSubmit={() => {
-        if (timezoneFieldRef.current) {
-          timezoneFieldRef.current.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        }
-      }}
+      onSubmit={handleFormSubmit}
     >
       <input ref={startFieldRef} type="hidden" name="formStartedAt" defaultValue="" />
-      <input ref={timezoneFieldRef} type="hidden" name="requestedContactTimezone" defaultValue="" />
+      <input type="hidden" name="requestedContactAt" value={requestedContactAt} />
+      <input
+        ref={requestedContactTimezoneRef}
+        type="hidden"
+        name="requestedContactTimezone"
+        defaultValue=""
+      />
       <div className="hidden" aria-hidden="true">
         <label htmlFor="website">Leave this field empty</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -163,24 +244,129 @@ export function LeadForm({ submitLabel }: { submitLabel: string }) {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block text-sm font-semibold text-slate-800 dark:text-slate-100">
+        <div className="block text-sm font-semibold text-slate-800 dark:text-slate-100">
           Best date and time for a call *
-          <input
-            id="lead-requested-contact-at"
-            name="requestedContactAt"
-            type="datetime-local"
-            required
-            aria-invalid={Boolean(state.fieldErrors?.requestedContactAt)}
-            aria-describedby={
-              state.fieldErrors?.requestedContactAt ? "lead-requested-contact-at-error" : undefined
-            }
-            className={fieldClassName}
-          />
-          <FieldError
-            id="lead-requested-contact-at-error"
-            errors={state.fieldErrors?.requestedContactAt}
-          />
-        </label>
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="flex-1 min-w-[120px]">
+              <label htmlFor="lead-month" className="block text-xs font-medium text-slate-500 mb-1">
+                Month
+              </label>
+              <select
+                id="lead-month"
+                value={dateState.month}
+                onChange={handleMonthChange}
+                className={fieldClassName}
+                aria-invalid={Boolean(state.fieldErrors?.requestedContactAt)}
+                aria-describedby={
+                  state.fieldErrors?.requestedContactAt
+                    ? "lead-requested-contact-at-error"
+                    : undefined
+                }
+              >
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                  <option key={m} value={m}>
+                    {new Date(2025, m - 1, 1).toLocaleString("en-US", { month: "long" })}
+                  </option>
+                ))}
+              </select>
+              <FieldError
+                id="lead-requested-contact-at-error"
+                errors={state.fieldErrors?.requestedContactAt}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[100px]">
+              <label htmlFor="lead-day" className="block text-xs font-medium text-slate-500 mb-1">
+                Day
+              </label>
+              <input
+                id="lead-day"
+                type="number"
+                min="1"
+                max="31"
+                value={dateState.day}
+                onChange={handleDayChange}
+                className={fieldClassName}
+                aria-invalid={Boolean(state.fieldErrors?.requestedContactAt)}
+                aria-describedby={
+                  state.fieldErrors?.requestedContactAt
+                    ? "lead-requested-contact-at-error"
+                    : undefined
+                }
+              />
+            </div>
+
+            <div className="flex-1 min-w-[110px]">
+              <label htmlFor="lead-hour" className="block text-xs font-medium text-slate-500 mb-1">
+                Hour
+              </label>
+              <input
+                id="lead-hour"
+                type="number"
+                min="1"
+                max="12"
+                value={dateState.hour}
+                onChange={handleHourChange}
+                className={fieldClassName}
+                aria-invalid={Boolean(state.fieldErrors?.requestedContactAt)}
+                aria-describedby={
+                  state.fieldErrors?.requestedContactAt
+                    ? "lead-requested-contact-at-error"
+                    : undefined
+                }
+              />
+            </div>
+
+            <div className="flex-1 min-w-[80px]">
+              <label
+                htmlFor="lead-minute"
+                className="block text-xs font-medium text-slate-500 mb-1"
+              >
+                Minute
+              </label>
+              <input
+                id="lead-minute"
+                type="number"
+                min="0"
+                max="59"
+                value={dateState.minute}
+                onChange={handleMinuteChange}
+                className={fieldClassName}
+                aria-invalid={Boolean(state.fieldErrors?.requestedContactAt)}
+                aria-describedby={
+                  state.fieldErrors?.requestedContactAt
+                    ? "lead-requested-contact-at-error"
+                    : undefined
+                }
+              />
+            </div>
+
+            <div className="flex-1 min-w-[70px]">
+              <span className="block text-xs font-medium text-slate-500 mb-1">AM/PM</span>
+              <div className="flex gap-1" role="radiogroup" aria-label="AM or PM">
+                <button
+                  type="button"
+                  onClick={() => handleAMPMChange("AM")}
+                  className={`min-h-11 min-w-11 rounded border px-3 py-2 text-sm ${dateState.ampm === "AM" ? "border-slate-950 bg-slate-950 text-white" : "border-slate-400 bg-white text-slate-950"}`}
+                  role="radio"
+                  aria-checked={dateState.ampm === "AM"}
+                >
+                  AM
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAMPMChange("PM")}
+                  className={`min-h-11 min-w-11 rounded border px-3 py-2 text-sm ${dateState.ampm === "PM" ? "border-slate-950 bg-slate-950 text-white" : "border-slate-400 bg-white text-slate-950"}`}
+                  role="radio"
+                  aria-checked={dateState.ampm === "PM"}
+                >
+                  PM
+                </button>
+              </div>
+            </div>
+          </div>
+          <p className="mt-1 text-xs text-slate-500">Timezone: {dateState.timezone}</p>
+        </div>
         <p className="self-end text-sm leading-6 text-slate-600 dark:text-slate-300">
           We will use your browser timezone so the requested time is clear to our team.
         </p>

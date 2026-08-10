@@ -74,4 +74,47 @@ describe("LeadForm", () => {
     const email = document.getElementById("lead-email");
     expect(email).toHaveClass("border-slate-400", "dark:border-slate-500");
   });
+
+  it("does not render a datetime-local input", () => {
+    useActionStateMock.mockReturnValue([{}, vi.fn(), false]);
+    render(<LeadForm submitLabel="Send request" />);
+
+    const datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+    expect(datetimeInputs).toHaveLength(0);
+  });
+
+  it("does not use geolocation or permission APIs", () => {
+    useActionStateMock.mockReturnValue([{}, vi.fn(), false]);
+    render(<LeadForm submitLabel="Send request" />);
+
+    // The form should not reference navigator.geolocation or navigator.permissions
+    const formElement = screen.getByRole("form", { name: "Schedule a call form" });
+    const formHTML = formElement.outerHTML;
+    expect(formHTML).not.toContain("geolocation");
+    expect(formHTML).not.toContain("permissions");
+    expect(formHTML).not.toContain("navigator.geolocation");
+    expect(formHTML).not.toContain("navigator.permissions");
+  });
+
+  it("submits the computed requestedContactAt hidden field", () => {
+    useActionStateMock.mockReturnValue([{}, vi.fn(), false]);
+    render(<LeadForm submitLabel="Send request" />);
+
+    const form = screen.getByRole("form", { name: "Schedule a call form" });
+    const hiddenInput = form.querySelector<HTMLInputElement>('input[name="requestedContactAt"]');
+    expect(hiddenInput).not.toBeNull();
+    // The value should match YYYY-MM-DDTHH:mm format
+    expect(hiddenInput?.value).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
+  });
+
+  it("captures the browser IANA timezone on submit", () => {
+    useActionStateMock.mockReturnValue([{}, vi.fn(), false]);
+    render(<LeadForm submitLabel="Send request" />);
+
+    const form = screen.getByRole("form", { name: "Schedule a call form" });
+    fireEvent.submit(form);
+
+    const hiddenInput = form.querySelector<HTMLInputElement>('[name="requestedContactTimezone"]');
+    expect(hiddenInput?.value).toBe(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  });
 });
