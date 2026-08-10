@@ -1,6 +1,5 @@
 // LeadbyLead Google Sheets receiver.
-// Deploy as a Web app, set WEBHOOK_SECRET in Script Properties, and restrict
-// access according to the deployment's operational policy.
+// Deploy as a Web app and set the deployed URL as GOOGLE_SHEETS_WEBHOOK_URL.
 // Column order intentionally excludes all package/pricing fields.
 const HEADERS = [
   "received_at",
@@ -19,17 +18,10 @@ const HEADERS = [
 
 function doPost(e) {
   const payload = JSON.parse(e.postData.contents);
-  const expectedSecret = PropertiesService.getScriptProperties().getProperty("WEBHOOK_SECRET");
-
-  if (!expectedSecret || payload.webhook_secret !== expectedSecret) {
-    return ContentService.createTextOutput(JSON.stringify({ error: "Unauthorized" })).setMimeType(
-      ContentService.MimeType.JSON,
-    );
-  }
-
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
   if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
 
+  const rowId = Utilities.getUuid();
   sheet.appendRow([
     new Date(),
     payload.source || "contact",
@@ -45,7 +37,7 @@ function doPost(e) {
     payload.consent_timestamp || "",
   ]);
 
-  return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, id: rowId })).setMimeType(
     ContentService.MimeType.JSON,
   );
 }

@@ -4,12 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLeadIntegrationConfig } from "@/lib/env";
 import { LeadSubmissionService } from "@/features/leads/lead-service";
-import { SupabaseLeadRepository } from "@/features/leads/lead-repository";
-import {
-  FanOutLeadNotificationService,
-  GoogleSheetsLeadNotificationService,
-  ResendLeadNotificationService,
-} from "@/features/leads/notification-service";
+import { GoogleSheetsLeadRepository } from "@/features/leads/lead-repository";
 import { leadSubmissionSchema } from "@/features/leads/lead-schema";
 import { isRateLimited } from "@/features/leads/rate-limit";
 
@@ -82,22 +77,7 @@ export async function submitLead(_: LeadFormState, formData: FormData): Promise<
   try {
     const config = getLeadIntegrationConfig();
     const service = new LeadSubmissionService(
-      new SupabaseLeadRepository(config.supabaseUrl, config.supabaseServiceRoleKey),
-      new FanOutLeadNotificationService([
-        new ResendLeadNotificationService(
-          config.resendApiKey,
-          config.resendFromEmail,
-          config.notificationEmail,
-        ),
-        ...(config.googleSheetsWebhookUrl && config.googleSheetsWebhookSecret
-          ? [
-              new GoogleSheetsLeadNotificationService(
-                config.googleSheetsWebhookUrl,
-                config.googleSheetsWebhookSecret,
-              ),
-            ]
-          : []),
-      ]),
+      new GoogleSheetsLeadRepository(config.googleSheetsWebhookUrl),
     );
     await service.submit(parsed.data);
   } catch (error) {

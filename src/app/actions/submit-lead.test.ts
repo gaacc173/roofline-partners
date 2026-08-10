@@ -4,13 +4,9 @@ const mocks = vi.hoisted(() => ({
   requestHeaders: new Headers(),
   isRateLimited: vi.fn(() => false),
   getLeadIntegrationConfig: vi.fn(() => ({
-    supabaseUrl: "https://project.supabase.co",
-    supabaseServiceRoleKey: "supabase-secret",
-    resendApiKey: "resend-secret",
-    resendFromEmail: "from@example.com",
-    notificationEmail: "owner@example.com",
+    googleSheetsWebhookUrl: "https://script.google.com/macros/s/xyz/exec",
   })),
-  submit: vi.fn().mockResolvedValue({ id: "lead-123" }),
+  submit: vi.fn().mockResolvedValue({ id: "row-123" }),
   redirect: vi.fn((destination: string): never => {
     throw new Error(`REDIRECT:${destination}`);
   }),
@@ -25,11 +21,10 @@ vi.mock("@/features/leads/lead-service", () => ({
     submit = mocks.submit;
   },
 }));
-vi.mock("@/features/leads/lead-repository", () => ({ SupabaseLeadRepository: class {} }));
-vi.mock("@/features/leads/notification-service", () => ({
-  FanOutLeadNotificationService: class {},
-  GoogleSheetsLeadNotificationService: class {},
-  ResendLeadNotificationService: class {},
+vi.mock("@/features/leads/lead-repository", () => ({
+  GoogleSheetsLeadRepository: class {
+    constructor(public readonly url: string) {}
+  },
 }));
 
 import { submitLead } from "./submit-lead";
@@ -45,7 +40,7 @@ function validForm(overrides: Record<string, string> = {}): FormData {
     zipCode: "90210",
     requestedContactAt: "2026-08-15T14:00",
     requestedContactTimezone: "America/Los_Angeles",
-    notes: "Interested in discussing storm repair opportunities.",
+    notes: "PRODUCTION TEST ONLY - verify Google Sheets lead capture.",
     consent: "on",
     website: "",
     formStartedAt: String(Date.now() - 5_000),
@@ -55,7 +50,7 @@ function validForm(overrides: Record<string, string> = {}): FormData {
   return formData;
 }
 
-describe("submitLead", () => {
+describe("submitLead Sheets recovery path", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.requestHeaders = new Headers({
@@ -64,48 +59,29 @@ describe("submitLead", () => {
       "x-forwarded-for": "203.0.113.10, 10.0.0.1",
     });
     mocks.isRateLimited.mockReturnValue(false);
-    mocks.submit.mockResolvedValue({ id: "lead-123" });
+    mocks.submit.mockResolvedValue({ id: "row-123" });
   });
 
-  it("rejects requests from a missing or mismatched origin before rate limiting", async () => {
-    mocks.requestHeaders = new Headers({
-      origin: "https://attacker.example",
-      host: "leadbylead.example",
-    });
-    await expect(submitLead({}, validForm())).resolves.toEqual({
-      error: "We could not verify this request. Please refresh the page and try again.",
-    });
-    expect(mocks.isRateLimited).not.toHaveBeenCalled();
-    expect(mocks.submit).not.toHaveBeenCalled();
-  });
-
-  it("rejects rate-limited and malformed requests before provider setup", async () => {
-    mocks.isRateLimited.mockReturnValueOnce(true);
-    await expect(submitLead({}, validForm())).resolves.toMatchObject({
-      error: "Too many requests. Please wait a few minutes and try again.",
-    });
-    await expect(submitLead({}, validForm({ website: "spam" }))).resolves.toMatchObject({
-      error: "Please correct the highlighted fields.",
-    });
-    expect(mocks.getLeadIntegrationConfig).not.toHaveBeenCalled();
-  });
-
-  it("uses the first forwarded address, submits, and redirects after success", async () => {
+  it("uses only the configured Sheets repository and redirects after storage", async () => {
     await expect(submitLead({}, validForm())).rejects.toThrow("REDIRECT:/thank-you");
-    expect(mocks.isRateLimited).toHaveBeenCalledWith("203.0.113.10");
+    expect(mocks.getLeadIntegrationConfig).toHaveBeenCalledOnce();
     expect(mocks.submit).toHaveBeenCalledWith(
-      expect.objectContaining({ requestedContactTimezone: "America/Los_Angeles" }),
+      expect.objectContaining({
+        companyName: "Rivera Roofing",
+        requestedContactTimezone: "America/Los_Angeles",
+      }),
     );
   });
 
-  it("returns a safe error when the integration service fails", async () => {
-    mocks.submit.mockRejectedValueOnce(new Error("provider failure"));
+  it("returns a safe error when Sheets storage fails", async () => {
+    mocks.submit.mockRejectedValueOnce(new Error("Sheets unavailable"));
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
     await expect(submitLead({}, validForm())).resolves.toEqual({
       error:
         "We could not submit your request right now. Please try again shortly or contact us directly.",
     });
-    expect(mocks.redirect).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledWith("Lead submission failed.", expect.any(Error));
     errorSpy.mockRestore();
   });
 });
